@@ -60,6 +60,11 @@ Sample usage for a project using 1 CSS module (for application and 3rd party CSS
     });
 
 
+### Requirements ###
+
+Java and Python version 2 must be installed and part of the system path as `java` and `python`. These commands are also configurable via `buildOptions` (<i>e.g.</i> in case `python` resolves to Python 3).
+
+
 ### Project Options ###
 
 Each CSS or JS module specifies the input files that should be compiled (or not) and combined together to produce a single output CSS or JS file for that module. In the case of JS files using `goog.require()` and `goog.provide()`, these input files are specified by listing the _root namespace(s)_ that transitively `goog.require()` all the JS that should be included in that module.
@@ -79,14 +84,25 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
   - **dontCompileInputFiles**: (If any) List of JS files that should NOT be compiled or minified by the Closure JS compiler.
 
 #### Optional ####
+
 - **jsWarningsWhitelistFile**: A whitelist file for JS compiler warnings where each line is of the form:
-  - path/to/file.js:{line-number}  {first-line-of-warning}
-  - Example: src/main.js:294  Suspicious code. This code lacks side-effects. Is there a bug?
+  - `path/to/file.js:{line-number}  {first-line-of-warning}`
+  - For example: <pre>src/main.js:294  Suspicious code. This code lacks side-effects. Is there a bug?</pre>
 
 
 ### Build Options ###
 
-TODO
+#### Required ####
+
+- **type**: The type of build, either `closureProBuild.RELEASE` (fully minified) or `closureProBuild.DEBUG` (human readable).
+
+#### Optional ####
+
+- **generatedCodeDir**: What directory should generated code be put under? (default: gen/)
+- **tempFileDir**: What directory should temporary build files be put under? (default: tmp/)
+- **outputDir**: What directory should output JS and CSS files be placed under? (default: build/)
+- **python2Command**: What command is used to invoke Python version 2? (default: python)
+- **javaCommand**: What command is used to invoke Java? (default: java)
 
 
 General Notes
@@ -102,7 +118,7 @@ Planned Features
 ----------------
 Future support is planned for:
 - Message translation tools & separate output files for each supported locale.
-- RTL flipping of CSS styles (e.g. "left: 20px" becomes "right: 20px").
+- RTL flipping of CSS styles (<i>e.g.</i> "left: 20px" becomes "right: 20px") for RTL locales.
 - Custom externs files (e.g. if you want to include jQuery via a CDN src script tag, an externs file could tell the Closure compiler which symbols it can trust to be defined and include type information).
 
 
