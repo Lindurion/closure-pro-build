@@ -9,8 +9,8 @@ Features
 - Can have multiple JS/Soy, CSS modules (multiple output JS or CSS files that can be served when needed).
 - Automatically calculates Closure dependencies & moves input files common to multiple modules into lower modules as needed.
 - Input JS files can be:
-  - Fully Closure compatible (using goog.require(), goog.provide()).
-  - Partly Closure compatible (not using goog.require(), goog.provide()), still run through compilation & minification.
+  - Fully Closure-compatible (using `goog.require()`, `goog.provide()`).
+  - Partly Closure-compatible (not using `goog.require()`, `goog.provide()`), still run through compilation & minification.
   - Directly included without compilation or minification.
 - Input CSS files can be:
   - GSS files (supports mixins, functions, basic logic) compiled by Closure Stylesheets (GSS) compiler.
@@ -21,17 +21,16 @@ Features
 
 Usage
 -----
-Sample usage for a project using 1 CSS module (for application and 3rd party CSS) and 2 JS modules (one for server-side Soy template to render initial HTML page and the other for all client-side JS that will be downloaded by the user):
+Sample usage for a project using 1 CSS module (for application and 3rd party CSS) and 2 JS modules (one for server-side Soy templates to render initial HTML page and the other for all client-side JS that will be downloaded by users):
 
     var closureProBuild = require('closure-pro-build');
     
     var projectOptions = {
-      projectName: 'sample',
-      rootSrcDir: 'src/client/',
+      rootSrcDir: 'src/',
       cssModules: {
         'style': {
           description: 'All CSS styles for the project',
-          closureInputFiles: ['src/client/main.gss', 'src/client/other.css'],
+          closureInputFiles: ['src/main.gss', 'src/other.css'],
           dontCompileInputFiles: ['path/to/some/third_party.css'],
         }
       },
@@ -60,11 +59,43 @@ Sample usage for a project using 1 CSS module (for application and 3rd party CSS
       // Success: style.css, page.js, main.js were output to build/release/.
     });
 
+
 ### Project Options ###
-TODO
+
+Each CSS or JS module specifies the input files that should be compiled (or not) and combined together to produce a single output CSS or JS file for that module. In the case of JS files using `goog.require()` and `goog.provide()`, these input files are specified by listing the _root namespace(s)_ that transitively `goog.require()` all the JS that should be included in that module.
+
+#### Required ####
+
+- **rootSrcDir**: Path to root source directory, which all project Soy and Closure-namespaced JS files should be under.
+- **cssModules**: JS Object map from module name (determines output CSS filename) to an object with these properties:
+  - **description**: String that describes the module (for documentation).
+  - **closureInputFiles**: (If any) List of GSS or CSS files that should be compiled & minified (including CSS class renaming) using the Closure Stylesheets compiler. Any CSS classes from these files should be accessed via `goog.getCssName('theClassName')` in JS or `{css theClassName}` in Soy.
+  - **dontCompileInputFiles**: (If any) List of CSS files that should not be compiled by the GSS compiler (so no minification or CSS class renaming). CSS classes from these files should be accessed normally in JS or Soy (NOT using `goog.getCssName()` or `{css}`). This CSS will be included in the output before any closureInputFiles.
+- **jsModules**: JS Object map from module name (determines output JS filename) to an object with these properties:
+  - **description**: String that describes the module (for documentation).
+  - **dependsOnModules**: (If any) List of JS module names that this module depends on (that will always be loaded before this one). Only immediate deps need to be specified; will automatically consider transitive dependencies.
+  - **closureRootNamespaces**: (If any) List of the root Closure namespace(s) that transitively `goog.require()` all the Closure-namespaced JS that should be included in this module.
+  - **nonClosureNamespacedInputFiles**: (If any) List of the JS files that do NOT use `goog.require()` or `goog.provide()` but that should still be compiled (including symbol renaming) by the Closure JS Compiler.
+  - **dontCompileInputFiles**: (If any) List of JS files that should NOT be compiled or minified by the Closure JS compiler.
+
+#### Optional ####
+- **jsWarningsWhitelistFile**: A whitelist file for JS compiler warnings where each line is of the form:
+  - path/to/file.js:{line-number}  {first-line-of-warning}
+  - Example: src/main.js:294  Suspicious code. This code lacks side-effects. Is there a bug?
+
 
 ### Build Options ###
+
 TODO
+
+
+General Notes
+-------------
+
+- In all compiled JS, you typically want to access properties as `foo.bar` (NOT `foo['bar']`), since these symbols will be obfuscated in the compiled output (so the quoted string lookup would fail).
+- The only possible exception to this is when interacting with JS that is compiled separately (or listed in dontCompileInputFiles) from your compiled JS, where you should do one of two things:
+  1. Always use quoted strings to access these properties (<i>e.g.</i> `window['foo']['bar']`).
+  2. Use an [externs file](http://developers.google.com/closure/compiler/docs/api-tutorial3#externs) to tell the Closure JS Compiler that certain symbols will be provided externally (so they shouldn't ever be renamed). In that case `foo.bar` access is fine, since the compiler will know not to rename those symbols. (Not yet supported by closure-pro-build, but support should be easy to add for this).
 
 
 Planned Features
@@ -72,6 +103,7 @@ Planned Features
 Future support is planned for:
 - Message translation tools & separate output files for each supported locale.
 - RTL flipping of CSS styles (e.g. "left: 20px" becomes "right: 20px").
+- Custom externs files (e.g. if you want to include jQuery via a CDN src script tag, an externs file could tell the Closure compiler which symbols it can trust to be defined and include type information).
 
 
 License & Copyright
