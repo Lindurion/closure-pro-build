@@ -1,7 +1,7 @@
 closure-pro-build
 =================
 
-**Closure Project Builder**: An npm, node.js package that makes it super easy to build projects using some or all of Closure's [JavaScript Compiler](http://developers.google.com/closure/compiler/), [Templates (Soy)](http://developers.google.com/closure/templates/), [Stylesheets (GSS)](http://code.google.com/p/closure-stylesheets/), and [JS Library](http://developers.google.com/closure/library/).
+**Closure Project Builder**: An npm, node.js package that makes it super easy to build projects using some or all of Closure's [JS Compiler](http://developers.google.com/closure/compiler/), [Templates (Soy)](http://developers.google.com/closure/templates/), [Stylesheets (GSS)](http://code.google.com/p/closure-stylesheets/), and [JS Library](http://developers.google.com/closure/library/).
 
 
 Features

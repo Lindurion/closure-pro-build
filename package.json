@@ -1,0 +1,34 @@
+{
+  "name": "closure-pro-build",
+  "version": "0.0.1",
+  "description": "Build projects using some or all of Closure's JS Compiler, Templates (Soy), Stylesheets (GSS), and JS Library.",
+  "keywords": [
+    "closure",
+    "compiler",
+    "soy",
+    "templates",
+    "gss",
+    "node"
+  ],
+  "homepage": "https://github.com/Lindurion/closure-pro-build",
+  "bugs": "http://github.com/Lindurion/closure-pro-build/issues",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Lindurion/closure-pro-build.git"
+  },
+  "author": {
+    "name": "Eric W. Barndollar",
+    "email": "eric@EricWBarndollar.com",
+    "url": "https://github.com/Lindurion"
+  },
+  "main": "closure-pro-build",
+  "devDependencies": {
+    "should": ">=1.3.0 <2.0",
+    "mocha": ">=1.13.0 <2.0"
+  },
+  "engines": {"node": ">=0.10.3"},
+  "licenses": [{
+    "type": "Apache 2.0",
+    "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+  }]
+}
