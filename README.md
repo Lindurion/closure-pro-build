@@ -24,7 +24,7 @@ Usage
 Sample usage for a project using 1 CSS module (for application and 3rd party CSS) and 2 JS modules (one for server-side Soy templates to render initial HTML page and the other for all client-side JS that will be downloaded by users):
 
     var closureProBuild = require('closure-pro-build');
-    
+
     var projectOptions = {
       rootSrcDir: 'src/',
       cssModules: {
@@ -47,15 +47,15 @@ Sample usage for a project using 1 CSS module (for application and 3rd party CSS
         }
       }
     };
-    
+
     var buildOptions = {type: closureProBuild.RELEASE};
-    
+
     closureProBuild.build(projectOptions, buildOptions, function(err) {
       if (err) {
         // ...Handle the Error...
         return;
       }
-      
+
       // Success: style.css, page.js, main.js were output to build/release/.
     });
 
@@ -103,6 +103,7 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 - **outputDir**: What directory should output JS and CSS files be placed under? (default: build/)
 - **python2Command**: What command is used to invoke Python version 2? (default: python)
 - **javaCommand**: What command is used to invoke Java? (default: java)
+- **suppressOutput**: Set to true to suppress any standard output or standard error stream output during compilation. (default: false)
 
 
 General Notes
