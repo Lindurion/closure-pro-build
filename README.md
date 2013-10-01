@@ -30,7 +30,7 @@ Sample usage for a project using 1 CSS module (for application and 3rd party CSS
       cssModules: {
         'style': {
           description: 'All CSS styles for the project',
-          closureInputFiles: ['src/main.gss', 'src/other.css'],
+          closureInputFiles: ['main.gss', 'other.css'],
           dontCompileInputFiles: ['path/to/some/third_party.css'],
         }
       },
@@ -58,6 +58,19 @@ Sample usage for a project using 1 CSS module (for application and 3rd party CSS
 
       // Success: style.css, page.js, main.js were output to build/release/.
     });
+
+
+### Input Files ###
+
+All `InputFiles` parameters are handled as follows:
+- Paths are interpreted relative to the `rootSrcDir` specified in the project options.
+- **Single File**: include full paths using forward slashes, <i>e.g.</i> `['path/to/my/file.js']`.
+- **Glob Regex Pattern**: use [minimatch](http://github.com/isaacs/minimatch) style patterns with `*`, `**`, and other regex characters to match many files that fit the given pattern. Some common examples:
+  - `[style/*.css]`: matches all .css files in the `style/` directory.
+  - `[style/**/*.gss]`: matches all .gss files recursively under the `style/` directory.
+  - `[**/*_layout.css]`: matches all files recursively that end in `_layout.css`.
+  - Note that `#` characters are not treated as comments, and `!` characters aren't treated as negations.
+- If a path contains backslashes (but no forward slashes or glob regex special characters), then the backslashes are converted to forward slashes and treated as single files.
 
 
 ### Requirements ###
@@ -98,12 +111,12 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 
 #### Optional ####
 
-- **generatedCodeDir**: What directory should generated code be put under? (default: gen/)
-- **tempFileDir**: What directory should temporary build files be put under? (default: tmp/)
-- **outputDir**: What directory should output JS and CSS files be placed under? (default: build/)
-- **python2Command**: What command is used to invoke Python version 2? (default: python)
-- **javaCommand**: What command is used to invoke Java? (default: java)
-- **suppressOutput**: Set to true to suppress any standard output or standard error stream output during compilation. (default: false)
+- **generatedCodeDir**: What directory should generated code be put under (relative to current working directory)? _default: gen/_
+- **tempFileDir**: What directory should temporary build files be put under (relative to current working directory)? _default: tmp/_
+- **outputDir**: What directory should output JS and CSS files be placed under (relative to current working directory)? _default: build/_
+- **python2Command**: What command is used to invoke Python version 2? _default: python_
+- **javaCommand**: What command is used to invoke Java? _default: java_
+- **suppressOutput**: True to suppress any standard output/error stream output during compilation. _default: false_
 
 
 General Notes
@@ -119,7 +132,7 @@ Planned Features
 ----------------
 Future support is planned for:
 - Message translation tools & separate output files for each supported locale.
-- RTL flipping of CSS styles (<i>e.g.</i> "left: 20px" becomes "right: 20px") for RTL locales.
+- RTL flipping of CSS styles (<i>e.g.</i> `"left: 20px"` becomes `"right: 20px"`) for RTL locales.
 - Custom externs files (e.g. if you want to include jQuery via a CDN src script tag, an externs file could tell the Closure compiler which symbols it can trust to be defined and include type information).
 
 
