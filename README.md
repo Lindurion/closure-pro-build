@@ -121,9 +121,8 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 
 General Notes
 -------------
-
 - In all compiled JS, you typically want to access properties as `foo.bar` (NOT `foo['bar']`), since these symbols will be obfuscated in the compiled output (so the quoted string lookup would fail).
-- The only possible exception to this is when interacting with JS that is compiled separately (or listed in dontCompileInputFiles) from your compiled JS, where you should do one of two things:
+- The only possible exception to this is when interacting with JS that is compiled separately (or listed in `dontCompileInputFiles`) from your compiled JS, where you should do one of two things:
   1. Always use quoted strings to access these properties (<i>e.g.</i> `window['foo']['bar']`).
   2. Use an [externs file](http://developers.google.com/closure/compiler/docs/api-tutorial3#externs) to tell the Closure JS Compiler that certain symbols will be provided externally (so they shouldn't ever be renamed). In that case `foo.bar` access is fine, since the compiler will know not to rename those symbols. (Not yet supported by closure-pro-build, but support should be easy to add for this).
 
@@ -133,13 +132,13 @@ Planned Features
 Future support is planned for:
 - Message translation tools & separate output files for each supported locale.
 - RTL flipping of CSS styles (<i>e.g.</i> `"left: 20px"` becomes `"right: 20px"`) for RTL locales.
-- Custom externs files (e.g. if you want to include jQuery via a CDN src script tag, an externs file could tell the Closure compiler which symbols it can trust to be defined and include type information).
+- Custom externs files (<i>e.g.</i> if you want to include jQuery via a CDN src script tag, an externs file could tell the Closure compiler which symbols it can trust to be defined and include type information).
 
 
 License & Copyright
 -------------------
 This package is released under the Apache License, Version 2.0. See LICENSE file for details.
 
-License information for 3rd party tools used can be found under the 3p/ folder. License information for other npm packages used can be found in the information and/or source code for those packages listed on the [npm website](http://npmjs.org/).
+License information for 3rd party tools used can be found under the `3p/` folder. License information for other npm packages used can be found in the information and/or source code for those packages listed on the [npm website](http://npmjs.org/).
 
 Copyright &copy; 2013 Eric W. Barndollar.
