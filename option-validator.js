@@ -258,11 +258,6 @@ var JS_MODULE_SPEC = {
 
 
 var PROJECT_OPTIONS_SPEC = {
-  'rootSrcDir': {
-    required: true,
-    validatorFn: assertString,
-    description: 'Root directory, w/ all Soy and Closure-namespaced JS below it'
-  },
   'cssModules': {
     required: true,
     validatorFn: assertValidCssModules,
@@ -272,6 +267,21 @@ var PROJECT_OPTIONS_SPEC = {
     required: true,
     validatorFn: assertValidJsModules,
     description: 'Map of JS modules and their inputs'
+  },
+  'rootSrcDir': {
+    required: false,
+    validatorFn: assertString,
+    description: 'Root directory that all input file paths are relative to'
+  },
+  'closureRootDirs': {
+    required: false,
+    validatorFn: assertStringArray,
+    description: 'List of root directories for Closure to resolve deps under'
+  },
+  'soyInputFiles': {
+    required: false,
+    validatorFn: assertStringArray,
+    description: 'List of input Soy files'
   },
   'jsWarningsWhitelistFile': {
     required: false,

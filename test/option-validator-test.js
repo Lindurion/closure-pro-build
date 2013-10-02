@@ -44,6 +44,7 @@ function newValidProjectOptions() {
         'closureRootNamespaces': ['project.secondary'],
       }
     },
+    'soyInputFiles': ['soy/*.soy'],
     'jsWarningsWhitelistFile': 'js_warnings_whitelist.txt'
   };
 }
@@ -151,8 +152,8 @@ describe('optionValidator', function() {
     });
 
     it('throws when missing a required project option', function() {
-      delete projectOpts['rootSrcDir'];
-      runValidator.should.throw(/Missing required option rootSrcDir/);
+      delete projectOpts['cssModules'];
+      runValidator.should.throw(/Missing required option cssModules/);
     });
 
     it('throws when missing a required build option', function() {
@@ -162,6 +163,7 @@ describe('optionValidator', function() {
 
     it('does not throw when an optional option is not specified', function() {
       delete buildOpts['python2Command'];
+      delete projectOpts['rootSrcDir'];
       runValidator.should.not.throw();
     });
 
@@ -174,6 +176,16 @@ describe('optionValidator', function() {
     it('throws when no JS inputs are specified', function() {
       projectOpts['jsModules']['secondary']['closureRootNamespaces'] = [];
       runValidator.should.throw(/Must specify at least one root Closure/);
+    });
+
+    it('does not throw when cssModules is an empty map', function() {
+      projectOpts['cssModules'] = {};
+      runValidator.should.not.throw();
+    });
+
+    it('does not throw when jsModules is an empty map', function() {
+      projectOpts['jsModules'] = {};
+      runValidator.should.not.throw();
     });
   });
 });
