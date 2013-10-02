@@ -7,15 +7,15 @@ closure-pro-build
 Features
 --------
 - Can have multiple JS/Soy, CSS modules (multiple output JS or CSS files that can be served when needed).
-- Automatically calculates Closure dependencies & moves input files common to multiple modules into lower modules as needed.
+- Automatically calculates Closure dependencies & moves input files common to multiple modules into parent modules as needed.
 - Input JS files can be:
-  - Fully Closure-compatible (using `goog.require()`, `goog.provide()`).
-  - Partly Closure-compatible (not using `goog.require()`, `goog.provide()`), still run through compilation & minification.
-  - Directly included without compilation or minification.
+  - **Fully Closure-compatible** (using `goog.require()`, `goog.provide()`).
+  - **Partly Closure-compatible** (not using `goog.require()`, `goog.provide()`), still run through compilation & minification.
+  - **Directly included** without compilation or minification.
 - Input CSS files can be:
-  - GSS files (supports mixins, functions, basic logic) compiled by Closure Stylesheets (GSS) compiler.
-  - Regular CSS files compiled by Closure Stylesheets (GSS) compiler.
-  - Directly included without compilation or class renaming.
+  - **GSS files** (supports mixins, functions, basic logic) compiled by Closure Stylesheets (GSS) compiler.
+  - **Regular CSS** files compiled by Closure Stylesheets (GSS) compiler.
+  - **Directly included** without compilation or class renaming.
 - Supports debug (human readable) & release (fully minified) compilation modes.
 
 
@@ -31,7 +31,7 @@ Sample usage for a project using 1 CSS module (for application and 3rd party CSS
         'style': {
           description: 'All CSS styles for the project',
           closureInputFiles: ['main.gss', 'other.css'],
-          dontCompileInputFiles: ['path/to/some/third_party.css'],
+          dontCompileInputFiles: ['path/to/some/third_party.css']
         }
       },
       jsModules: {
@@ -43,7 +43,7 @@ Sample usage for a project using 1 CSS module (for application and 3rd party CSS
           description: 'Main JS module, with all client-side JS',
           closureRootNamespaces: ['sample.main'],
           nonClosureNamespacedInputFiles: ['path/to/jquery.js'],
-          dontCompileInputFiles: ['path/to/wont-minify-this.js'],
+          dontCompileInputFiles: ['path/to/wont-minify-this.js']
         }
       }
     };
@@ -63,19 +63,18 @@ Sample usage for a project using 1 CSS module (for application and 3rd party CSS
 ### Input Files ###
 
 All `InputFiles` parameters are handled as follows:
-- Paths are interpreted relative to the `rootSrcDir` specified in the project options.
+- Paths are interpreted relative to the `rootSrcDir` specified in the project options (defaults to current working directory, `.`).
 - **Single File**: include full paths using forward slashes, <i>e.g.</i> `['path/to/my/file.js']`.
 - **Glob Regex Pattern**: use [minimatch](http://github.com/isaacs/minimatch) style patterns with `*`, `**`, and other regex characters to match many files that fit the given pattern. Some common examples:
   - `[style/*.css]`: matches all .css files in the `style/` directory.
   - `[style/**/*.gss]`: matches all .gss files recursively under the `style/` directory.
   - `[**/*_layout.css]`: matches all files recursively that end in `_layout.css`.
-  - Note that `#` characters are not treated as comments, and `!` characters aren't treated as negations.
 - If a path contains backslashes (but no forward slashes or glob regex special characters), then the backslashes are converted to forward slashes and treated as single files.
 
 
-### Requirements ###
+### System Requirements ###
 
-Java and Python version 2 must be installed and part of the system path as `java` and `python`. These commands are also configurable via `buildOptions` (<i>e.g.</i> in case `python` resolves to Python 3).
+Java and Python version 2 must be installed and part of the system path as `java` and `python` in order to run all Closure tools. These commands are also configurable via `buildOptions` (<i>e.g.</i> in case `python` would resolve to Python 3 on your system).
 
 
 ### Project Options ###
@@ -84,7 +83,6 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 
 #### Required ####
 
-- **rootSrcDir**: Path to root source directory, which all project Soy and Closure-namespaced JS files should be under.
 - **cssModules**: JS Object map from module name (determines output CSS filename) to an object with these properties:
   - **description**: String that describes the module (for documentation).
   - **closureInputFiles**: (If any) List of GSS or CSS files that should be compiled & minified (including CSS class renaming) using the Closure Stylesheets compiler. Any CSS classes from these files should be accessed via `goog.getCssName('theClassName')` in JS or `{css theClassName}` in Soy.
@@ -93,11 +91,14 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
   - **description**: String that describes the module (for documentation).
   - **dependsOnModules**: (If any) List of JS module names that this module depends on (that will always be loaded before this one). Only immediate deps need to be specified; will automatically consider transitive dependencies.
   - **closureRootNamespaces**: (If any) List of the root Closure namespace(s) that transitively `goog.require()` all the Closure-namespaced JS that should be included in this module.
-  - **nonClosureNamespacedInputFiles**: (If any) List of the JS files that do NOT use `goog.require()` or `goog.provide()` but that should still be compiled (including symbol renaming) by the Closure JS Compiler.
-  - **dontCompileInputFiles**: (If any) List of JS files that should NOT be compiled or minified by the Closure JS compiler.
+  - **nonClosureNamespacedInputFiles**: (If any) List of the JS files that do NOT use `goog.require()` or `goog.provide()` but that should still be compiled (including symbol renaming) by the Closure JS Compiler. These files must be specified in dependency order (such that a file only depends on files listed before it being loaded). These files will be loaded after any `dontCompileInputFiles`.
+  - **dontCompileInputFiles**: (If any) List of JS files that should NOT be compiled or minified by the Closure JS compiler. These files must be specified in dependency order (such that a file only depends on files listed before it being loaded). These files will be loaded before any `nonClosureNamespacedInputFiles`.
 
 #### Optional ####
 
+- **rootSrcDir**: Path to root source directory, which all `InputFiles` paths will be interpreted as relative to. Defaults to current working directory (`.`). For example, `'src/'` is a very common root source directory for many projects.
+- **closureRootDirs**: For fully Closure-compatible JS, list of root directories for Closure to recursively search under to resolve `goog.require()` dependencies. Directory paths are interpreted relative to `rootSrcDir`. Defaults to `['.']` (<i>i.e.</i> searches everywhere under `rootSrcDir`). Closure JS Library directories are automatically searched, so don't list them.
+- **soyInputFiles**: List of input Soy files to compile to JS files using the Closure Templates compiler. Defaults to `['**/*.soy']`, which will automatically find any .soy files recursively under `rootSrcDir` and won't invoke the Closure Templates compiler at all if there are no matching .soy files. This option only needs to be set to choose particular input files or to include .soy files from outside directories. See the [Using Soy in JS Modules](#using-soy-in-js-modules) section below for more information.
 - **jsWarningsWhitelistFile**: A whitelist file for JS compiler warnings where each line is of the form:
   - `path/to/file.js:{line-number}  {first-line-of-warning}`
   - For example: <pre>src/main.js:294  Suspicious code. This code lacks side-effects. Is there a bug?</pre>
@@ -117,6 +118,19 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 - **python2Command**: What command is used to invoke Python version 2? _default: python_
 - **javaCommand**: What command is used to invoke Java? _default: java_
 - **suppressOutput**: True to suppress any standard output/error stream output during compilation. _default: false_
+
+
+### Using Soy in JS Modules ###
+
+First, make sure all your Soy templates are being compiled:
+- If all your .soy files are under `rootSrcDir` (or subdirectories), then this happens automatically.
+- Otherwise, manually set `soyInputFiles` to match all of your .soy templates.
+
+Let's assume the Soy template you want to use starts out like this:
+
+    {namespace mysite.soy autoescape="contextual"}
+
+Then all you need to do is add `goog.require('mysite.soy');` to the top of the JS file you want to invoke the Soy template from. (Of course, make sure that JS file is transitively `goog.require()`'d from your JS module's `closureRootNamespaces`).
 
 
 General Notes
