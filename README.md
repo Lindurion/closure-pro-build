@@ -6,7 +6,7 @@ closure-pro-build
 
 Features
 --------
-- Can have multiple JS/Soy, CSS modules (multiple output JS or CSS files that can be served when needed).
+- Can have multiple JS/Soy modules (multiple output JS files that can be served when needed).
 - Automatically calculates Closure dependencies & moves input files common to multiple modules into parent modules as needed.
 - Input JS files can be:
   - **Fully Closure-compatible** (using `goog.require()`, `goog.provide()`).
@@ -21,18 +21,17 @@ Features
 
 Usage
 -----
-Sample usage for a project using 1 CSS module (for application and 3rd party CSS) and 2 JS modules (one for server-side Soy templates to render initial HTML page and the other for all client-side JS that will be downloaded by users):
+Sample usage for a project using a CSS module (for application and 3rd party CSS) and 2 JS modules (one for server-side Soy templates to render initial HTML page and the other for all client-side JS that will be downloaded by users):
 
     var closureProBuild = require('closure-pro-build');
 
     var projectOptions = {
       rootSrcDir: 'src/',
-      cssModules: {
-        'style': {
-          description: 'All CSS styles for the project',
-          closureInputFiles: ['main.gss', 'other.css'],
-          dontCompileInputFiles: ['path/to/some/third_party.css']
-        }
+      cssModule: {
+        name: 'style',
+        description: 'All CSS styles for the project',
+        closureInputFiles: ['main.gss', 'other.css'],
+        dontCompileInputFiles: ['path/to/some/third_party.css']
       },
       jsModules: {
         'page': {
@@ -66,9 +65,9 @@ All `InputFiles` parameters are handled as follows:
 - Paths are interpreted relative to the `rootSrcDir` specified in the project options (defaults to current working directory, `.`).
 - **Single File**: include full paths using forward slashes, <i>e.g.</i> `['path/to/my/file.js']`.
 - **Glob Regex Pattern**: use [minimatch](http://github.com/isaacs/minimatch) style patterns with `*`, `**`, and other regex characters to match many files that fit the given pattern. Some common examples:
-  - `[style/*.css]`: matches all .css files in the `style/` directory.
-  - `[style/**/*.gss]`: matches all .gss files recursively under the `style/` directory.
-  - `[**/*_layout.css]`: matches all files recursively that end in `_layout.css`.
+  - `['style/*.css']`: matches all .css files in the `style/` directory.
+  - `['style/**/*.gss']`: matches all .gss files recursively under the `style/` directory.
+  - `['**/*_layout.css']`: matches all files recursively that end in `_layout.css`.
 - If a path contains backslashes (but no forward slashes or glob regex special characters), then the backslashes are converted to forward slashes and treated as single files.
 
 
@@ -83,7 +82,8 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 
 #### Required ####
 
-- **cssModules**: JS Object map from module name (determines output CSS filename) to an object with these properties:
+- **cssModule**: JS Object map with these properties:
+  - **name**: (Optional) Name for CSS module (controls output file name). Defaults to `'style'`.
   - **description**: String that describes the module (for documentation).
   - **closureInputFiles**: (If any) List of GSS or CSS files that should be compiled & minified (including CSS class renaming) using the Closure Stylesheets compiler. Any CSS classes from these files should be accessed via `goog.getCssName('theClassName')` in JS or `{css theClassName}` in Soy.
   - **dontCompileInputFiles**: (If any) List of CSS files that should not be compiled by the GSS compiler (so no minification or CSS class renaming). CSS classes from these files should be accessed normally in JS or Soy (NOT using `goog.getCssName()` or `{css}`). This CSS will be included in the output before any closureInputFiles.
