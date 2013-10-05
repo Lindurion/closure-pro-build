@@ -26,12 +26,10 @@ var util = require('../util.js');
 function newValidProjectOptions() {
   return {
     'rootSrcDir': 'src/',
-    'cssModules': {
-      'style': {
-        'description': 'Some styles',
-        'closureInputFiles': ['src/style.gss'],
-        'dontCompileInputFiles': ['3p/3p.css'],
-      }
+    'cssModule': {
+      'description': 'Some styles',
+      'closureInputFiles': ['src/style.gss'],
+      'dontCompileInputFiles': ['3p/3p.css'],
     },
     'jsModules': {
       'main': {
@@ -104,26 +102,26 @@ describe('optionValidator', function() {
     });
 
     it('throws when array elements do not match expected type', function() {
-      projectOpts['cssModules']['style']['closureInputFiles'] = [42, 76];
+      projectOpts['cssModule']['closureInputFiles'] = [42, 76];
       runValidator.should.throw(/<42> is not a string/);
     });
 
     it('throws when expecting an Object but getting another type', function() {
-      projectOpts['cssModules'] = 'style.css';
+      projectOpts['cssModule'] = 'style.css';
       runValidator.should.throw(new RegExp(
           "<style.css> is not an Object map, projectOptions" +
-              "\\['cssModules'\\]:"));
+              "\\['cssModule'\\]:"));
     });
 
     it('throws when Object map values do not match expected type', function() {
-      projectOpts['cssModules'] = {'style': 'style.css'};
+      projectOpts['jsModules'] = {'main': 'main.js'};
       runValidator.should.throw(new RegExp(
-          "<style.css> is not an Object map, projectOptions" +
-              "\\['cssModules'\\]\\['style'\\]:"));
+          "<main.js> is not an Object map, projectOptions" +
+              "\\['jsModules'\\]\\['main'\\]:"));
     });
 
-    it('throws when a CSS module is null', function() {
-      projectOpts['cssModules'] = {'style': null};
+    it('throws when CSS module is null', function() {
+      projectOpts['cssModule'] = null;
       runValidator.should.throw(/null is not valid value/);
     });
 
@@ -138,7 +136,7 @@ describe('optionValidator', function() {
     });
 
     it('throws when given an unrecognized CSS module option', function() {
-      projectOpts['cssModules']['style']['tintAllColors'] = '36%';
+      projectOpts['cssModule']['tintAllColors'] = '36%';
       runValidator.should.throw(/Unrecognized option <tintAllColors>/);
     });
 
@@ -153,8 +151,8 @@ describe('optionValidator', function() {
     });
 
     it('throws when missing a required project option', function() {
-      delete projectOpts['cssModules'];
-      runValidator.should.throw(/Missing required option cssModules/);
+      delete projectOpts['jsModules'];
+      runValidator.should.throw(/Missing required option jsModules/);
     });
 
     it('throws when missing a required build option', function() {
@@ -169,19 +167,14 @@ describe('optionValidator', function() {
     });
 
     it('throws when no CSS input files are specified', function() {
-      projectOpts['cssModules']['style']['closureInputFiles'] = [];
-      delete projectOpts['cssModules']['style']['dontCompileInputFiles'];
+      projectOpts['cssModule']['closureInputFiles'] = [];
+      delete projectOpts['cssModule']['dontCompileInputFiles'];
       runValidator.should.throw(/Must specify at least one input CSS/);
     });
 
     it('throws when no JS inputs are specified', function() {
       projectOpts['jsModules']['secondary']['closureRootNamespaces'] = [];
       runValidator.should.throw(/Must specify at least one root Closure/);
-    });
-
-    it('does not throw when cssModules is an empty map', function() {
-      projectOpts['cssModules'] = {};
-      runValidator.should.not.throw();
     });
 
     it('does not throw when jsModules is an empty map', function() {

@@ -172,11 +172,6 @@ function assertValidCssModuleSpec(value, name, description) {
 }
 
 
-/** @type {function(*, string, string)} */
-var assertValidCssModules =
-    underscore.partial(assertObjectMapOf, assertValidCssModuleSpec);
-
-
 /**
  * @param {*} value
  * @param {string} name The option name.
@@ -210,6 +205,11 @@ var assertValidJsModules =
 //==============================================================================
 
 var CSS_MODULE_SPEC = {
+  'name': {
+    required: false,
+    validatorFn: assertString,
+    description: 'Name of CSS module (controls output .css file name)'
+  },
   'description': {
     required: false,
     validatorFn: assertString,
@@ -258,9 +258,9 @@ var JS_MODULE_SPEC = {
 
 
 var PROJECT_OPTIONS_SPEC = {
-  'cssModules': {
-    required: true,
-    validatorFn: assertValidCssModules,
+  'cssModule': {
+    required: false,
+    validatorFn: assertValidCssModuleSpec,
     description: 'Map of CSS modules and their inputs'
   },
   'jsModules': {
