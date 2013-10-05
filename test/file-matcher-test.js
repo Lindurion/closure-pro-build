@@ -65,20 +65,20 @@ describe('fileMatcher', function() {
     });
 
     var expectResolved = function(expectedResolvedFiles, callbackFn) {
-      fileMatcher.resolveAnyGlobPatterns(inputFiles, ROOT_SRC_DIR,
-          function(err, allFiles) {
-            should.not.exist(err);
+      fileMatcher.resolveAnyGlobPatternsAsync(inputFiles, ROOT_SRC_DIR)
+          .then(function(allFiles) {
             should.deepEqual(allFiles, expectedResolvedFiles);
             callbackFn(null);
-          });
+          }).end();
     }
 
     var expectFailure = function(expectedErrorMessage, callbackFn) {
-      fileMatcher.resolveAnyGlobPatterns(inputFiles, ROOT_SRC_DIR,
-          function(err, allFiles) {
+      fileMatcher.resolveAnyGlobPatternsAsync(inputFiles, ROOT_SRC_DIR)
+          .then(function(allFiles) {
+            should.fail('Was expecting ' + expectedErrorMessage);
+          }).fail(function(err) {
             should.exist(err);
             should.equal(err.message, expectedErrorMessage);
-            should.not.exist(allFiles);
             callbackFn(null);
           });
     }

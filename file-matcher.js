@@ -14,6 +14,7 @@
 
 var async = require('async');
 var glob = require('glob');
+var kew = require('kew');
 var underscore = require('underscore');
 
 
@@ -31,31 +32,26 @@ var IS_GLOB_REGEX = /[\^$|?*+()\[\]{}]/;
  *     e.g. ['my/single/file.js', 'dir/of/*.js'].
  * @param {string} rootSrcDir Root source directory that filesAndPatterns are
  *     relative to.
- * @param {function(Error, Array.<string>=)} callbackFn Called with array of
- *     resolved filenames on success, e.g. ['my/single/file.js',
- *     'dir/of/file1.js', 'dir/of/file2.js']. Called with Error on failure.
+ * @return {!Promise.<!Array.<string>>} Async result that will be called with
+ *     the list of resolved filenames on success.
  */
-function resolveAnyGlobPatterns(filesAndPatterns, rootSrcDir, callbackFn) {
-  resolveGlobs(filesAndPatterns, rootSrcDir, function(err, resolvedFiles) {
-    if (err) {
-      callbackFn(err);
-      return;
-    }
-
-    var allFiles = insertResolvedFiles(filesAndPatterns, resolvedFiles);
-    callbackFn(null, allFiles.map(convertBackslashes));
-  });
+function resolveAnyGlobPatternsAsync(filesAndPatterns, rootSrcDir) {
+  return resolveGlobsAsync(filesAndPatterns, rootSrcDir)
+      .then(function(resolvedFiles) {
+        var allFiles = insertResolvedFiles(filesAndPatterns, resolvedFiles);
+        return allFiles.map(convertBackslashes);
+      });
 }
 
 
 /**
- * Does the glob resolution for all glob file patterns in input, and calls
- * callbackFn with map from file pattern to list of resolved files.
+ * Does the glob resolution for all glob file patterns in input.
  * @param {!Array.<string>} filesAndPatterns
  * @param {string} rootSrcDir
- * @param {function(Error, Object.<string, !Array.<string>>=)} callbackFn
+ * @return {!Promise.<!Object.<string, !Array.<string>>>} A future map from
+ *     file pattern to list of resolved files (on success).
  */
-function resolveGlobs(filesAndPatterns, rootSrcDir, callbackFn) {
+function resolveGlobsAsync(filesAndPatterns, rootSrcDir) {
   var options = {cwd: rootSrcDir};
 
   var tasks = {};
@@ -66,7 +62,11 @@ function resolveGlobs(filesAndPatterns, rootSrcDir, callbackFn) {
     }
   });
 
-  async.parallel(tasks, callbackFn);
+  // TODO: Add kew.nfcall() and use that instead.
+  // https://github.com/Obvious/kew/pull/21
+  var deferred = kew.defer();
+  async.parallel(tasks, deferred.makeNodeResolver());
+  return deferred.promise;
 }
 
 
@@ -127,4 +127,4 @@ function convertBackslashes(filePath) {
 
 
 // Symbols exported by this internal module.
-module.exports = {resolveAnyGlobPatterns: resolveAnyGlobPatterns};
+module.exports = {resolveAnyGlobPatternsAsync: resolveAnyGlobPatternsAsync};
