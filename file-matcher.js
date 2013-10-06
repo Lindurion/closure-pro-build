@@ -16,10 +16,8 @@ var async = require('async');
 var glob = require('glob');
 var kew = require('kew');
 var underscore = require('underscore');
+var util = require('./util.js');
 
-
-/** Regular expression to match all backslashes in a path. */
-var ALL_BACKSLASHES = /\\/g;
 
 /** Regular expression to match file glob patterns. */
 var IS_GLOB_REGEX = /[\^$|?*+()\[\]{}]/;
@@ -122,7 +120,7 @@ function insertResolvedFiles(filesAndPatterns, resolvedFiles) {
  * @return {string}
  */
 function convertBackslashes(filePath) {
-  return filePath.replace(ALL_BACKSLASHES, '/');
+  return filePath.replace(util.ALL_BACKSLASHES, '/');
 }
 
 

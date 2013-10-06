@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var dirManager = require('./dir-manager.js');
 var optionValidator = require('./option-validator.js');
 var util = require('./util.js');
 
@@ -28,6 +29,7 @@ var util = require('./util.js');
  */
 function build(projectOptions, buildOptions, callbackFn) {
   optionValidator.assertValid(projectOptions, buildOptions);
+  var outDirsAsync = dirManager.createOutputDirsAsync(buildOptions);
 
   callbackFn(new Error('Not implemented yet'));
 }

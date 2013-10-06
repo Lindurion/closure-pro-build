@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/** Regular expression to match all backslashes in a path. */
+var ALL_BACKSLASHES = /\\/g;
+
 /** Constant indicating a debug build. */
 var DEBUG = 'debug';
 
@@ -21,6 +24,7 @@ var RELEASE = 'release';
 
 // Symbols exported by this internal module.
 module.exports = {
-  DEBUG: 'debug',
-  RELEASE: 'release'
+  ALL_BACKSLASHES: ALL_BACKSLASHES,
+  DEBUG: DEBUG,
+  RELEASE: RELEASE
 };
