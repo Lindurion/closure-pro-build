@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var cssBuilder = require('./css-builder.js');
 var dirManager = require('./dir-manager.js');
 var optionValidator = require('./option-validator.js');
 var util = require('./util.js');
@@ -30,6 +31,19 @@ var util = require('./util.js');
 function build(projectOptions, buildOptions, callbackFn) {
   optionValidator.assertValid(projectOptions, buildOptions);
   var outDirsAsync = dirManager.createOutputDirsAsync(buildOptions);
+
+  var buildingCss =
+      cssBuilder.build(projectOptions, buildOptions, outDirsAsync);
+
+// var soyJsAsync = soyBuilder.build(projectOptions, buildOptions, outDirsAsync)
+//     .then(function() {
+//       return jsBuilder.build(projectOptions, buildOptions, outDirsAsync,
+//           buildingCss.getCssRenamingFileAsync()));
+//     });
+//
+// kew.all([buildingCss.awaitCompletion(), soyJsAsync])
+//     .then(function() { callbackFn(null); })
+//     .fail(callbackFn);
 
   callbackFn(new Error('Not implemented yet'));
 }
