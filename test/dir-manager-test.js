@@ -86,47 +86,68 @@ describe('dirManager', function() {
     };
 
     it('succeeds for default debug build options', function(callbackFn) {
-      expectSuccess({type: util.DEBUG},
-          'tmp/debug/', 'gen/debug/', 'build/debug/', callbackFn);
+      expectSuccess({
+        'type': util.DEBUG,
+        'tempFileDir': 'tmp/',
+        'generatedCodeDir': 'gen/',
+        'outputDir': 'build/'
+      }, 'tmp/debug/', 'gen/debug/', 'build/debug/', callbackFn);
     });
 
     it('succeeds for default release build options', function(callbackFn) {
-      expectSuccess({type: util.RELEASE},
-          'tmp/release/', 'gen/release/', 'build/release/', callbackFn);
+      expectSuccess({
+        'type': util.RELEASE,
+        'tempFileDir': 'tmp/',
+        'generatedCodeDir': 'gen/',
+        'outputDir': 'build/'
+      }, 'tmp/release/', 'gen/release/', 'build/release/', callbackFn);
     });
 
     it('fails if any mkdirp() calls fail', function(callbackFn) {
       letSucceed(['tmp/debug/', 'build/debug/']);
       letFail(['gen/debug/']);
-      expectFailure({type: util.DEBUG}, callbackFn);
+      expectFailure({
+        'type': util.DEBUG,
+        'tempFileDir': 'tmp/',
+        'generatedCodeDir': 'gen/',
+        'outputDir': 'build/'
+      }, callbackFn);
     });
 
     it('fails if all mkdirp() calls fail', function(callbackFn) {
       letFail(['tmp/release/', 'gen/release/', 'build/release/']);
-      expectFailure({type: util.RELEASE}, callbackFn);
+      expectFailure({
+        'type': util.RELEASE,
+        'tempFileDir': 'tmp/',
+        'generatedCodeDir': 'gen/',
+        'outputDir': 'build/'
+      }, callbackFn);
     });
 
     it('respects all custom buildOptions dirs', function(callbackFn) {
       expectSuccess({
-        type: 'debug',
-        tempFileDir: 'mytmp/',
-        generatedCodeDir: 'mygen/',
-        outputDir: 'mybuild/'
+        'type': util.DEBUG,
+        'tempFileDir': 'mytmp/',
+        'generatedCodeDir': 'mygen/',
+        'outputDir': 'mybuild/'
       }, 'mytmp/debug/', 'mygen/debug/', 'mybuild/debug/', callbackFn);
     });
 
     it('converts backslashes to forward slashes', function(callbackFn) {
       expectSuccess({
-        type: 'debug',
-        tempFileDir: 'mytmp\\',
+        'type': util.DEBUG,
+        'tempFileDir': 'mytmp\\',
+        'generatedCodeDir': 'gen/',
+        'outputDir': 'build/'
       }, 'mytmp/debug/', 'gen/debug/', 'build/debug/', callbackFn);
     });
 
     it('tolerates dirs without trailing slashes', function(callbackFn) {
       expectSuccess({
-        type: 'release',
-        tempFileDir: 'mytmp',
-        outputDir: 'bin'
+        'type': util.RELEASE,
+        'tempFileDir': 'mytmp',
+        'generatedCodeDir': 'gen/',
+        'outputDir': 'bin'
       }, 'mytmp/release/', 'gen/release/', 'bin/release/', callbackFn);
     });
   });

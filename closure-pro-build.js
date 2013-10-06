@@ -29,7 +29,7 @@ var util = require('./util.js');
  *     null on success, or an Error on failure.
  */
 function build(projectOptions, buildOptions, callbackFn) {
-  optionValidator.assertValid(projectOptions, buildOptions);
+  optionValidator.assertValidAndFillDefaults(projectOptions, buildOptions);
   var outDirsAsync = dirManager.createOutputDirsAsync(buildOptions);
 
   var buildingCss =

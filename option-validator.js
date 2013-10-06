@@ -149,6 +149,9 @@ function assertMeetsSpec(spec, value, name, description) {
     if (value.hasOwnProperty(option)) {
       spec[option].validatorFn(value[option], name + '[\'' + option + '\']',
           spec[option].description);
+    } else if (spec[option].hasOwnProperty('defaultValue')) {
+      // Populate default value if available and no value was given.
+      value[option] = spec[option].defaultValue;
     }
   }
 }
@@ -208,7 +211,8 @@ var CSS_MODULE_SPEC = {
   'name': {
     required: false,
     validatorFn: assertString,
-    description: 'Name of CSS module (controls output .css file name)'
+    description: 'Name of CSS module (controls output .css file name)',
+    defaultValue: 'style'
   },
   'description': {
     required: false,
@@ -218,12 +222,14 @@ var CSS_MODULE_SPEC = {
   'closureInputFiles': {
     required: false,
     validatorFn: assertStringArray,
-    description: 'Input GSS or CSS files to compile with Closure Stylesheets'
+    description: 'Input GSS or CSS files to compile with Closure Stylesheets',
+    defaultValue: []
   },
   'dontCompileInputFiles': {
     required: false,
     validatorFn: assertStringArray,
-    description: 'Input CSS files to NOT compile with Closure Stylesheets'
+    description: 'Input CSS files to NOT compile with Closure Stylesheets',
+    defaultValue: []
   }
 };
 
@@ -237,22 +243,26 @@ var JS_MODULE_SPEC = {
   'dependsOnModules': {
     required: false,
     validatorFn: assertStringArray,
-    description: 'List of JS module names this module depends on'
+    description: 'List of JS module names this module depends on',
+    defaultValue: []
   },
   'closureRootNamespaces': {
     required: false,
     validatorFn: assertStringArray,
-    description: 'List of root Closure namespace(s) for this module'
+    description: 'List of root Closure namespace(s) for this module',
+    defaultValue: []
   },
   'nonClosureNamespacedInputFiles': {
     required: false,
     validatorFn: assertStringArray,
-    description: 'List of input JS files to compile that aren\'t using Closure'
+    description: 'List of input JS files to compile that aren\'t using Closure',
+    defaultValue: []
   },
   'dontCompileInputFiles': {
     required: false,
     validatorFn: assertStringArray,
-    description: 'List of input JS files to NOT compile with Closure Compiler'
+    description: 'List of input JS files to NOT compile with Closure Compiler',
+    defaultValue: []
   }
 };
 
@@ -271,17 +281,20 @@ var PROJECT_OPTIONS_SPEC = {
   'rootSrcDir': {
     required: false,
     validatorFn: assertString,
-    description: 'Root directory that all input file paths are relative to'
+    description: 'Root directory that all input file paths are relative to',
+    defaultValue: '.'
   },
   'closureRootDirs': {
     required: false,
     validatorFn: assertStringArray,
-    description: 'List of root directories for Closure to resolve deps under'
+    description: 'List of root directories for Closure to resolve deps under',
+    defaultValue: ['.']
   },
   'soyInputFiles': {
     required: false,
     validatorFn: assertStringArray,
-    description: 'List of input Soy files'
+    description: 'List of input Soy files',
+    defaultValue: ['**/*.soy']
   },
   'jsWarningsWhitelistFile': {
     required: false,
@@ -300,32 +313,38 @@ var BUILD_OPTIONS_SPEC = {
   'generatedCodeDir': {
     required: false,
     validatorFn: assertString,
-    description: 'Directory to place generated code under'
+    description: 'Directory to place generated code under',
+    defaultValue: 'gen/'
   },
   'tempFileDir': {
     required: false,
     validatorFn: assertString,
-    description: 'Directory to place temporary build files under'
+    description: 'Directory to place temporary build files under',
+    defaultValue: 'tmp/'
   },
   'outputDir': {
     required: false,
     validatorFn: assertString,
-    description: 'Directory to output JS and CSS files under'
+    description: 'Directory to output JS and CSS files under',
+    defaultValue: 'build/'
   },
   'python2Command': {
     required: false,
     validatorFn: assertString,
-    description: 'Command to invoke Python version 2'
+    description: 'Command to invoke Python version 2',
+    defaultValue: 'python'
   },
   'javaCommand': {
     required: false,
     validatorFn: assertString,
-    description: 'Command to invoke Java'
+    description: 'Command to invoke Java',
+    defaultValue: 'java'
   },
   'suppressOutput': {
     required: false,
     validatorFn: assertBoolean,
-    description: 'True if standard output/error should be suppressed'
+    description: 'True if standard output/error should be suppressed',
+    defaultValue: false
   }
 };
 
@@ -336,10 +355,11 @@ var BUILD_OPTIONS_SPEC = {
 
 /**
  * Throws an Error if projectOptions or buildOptions have any validation errors.
+ * After validation, fills in default values for any missing options.
  * @param {!Object} projectOptions
  * @param {!Object} buildOptions
  */
-function assertValid(projectOptions, buildOptions) {
+function assertValidAndFillDefaults(projectOptions, buildOptions) {
   assertMeetsSpec(PROJECT_OPTIONS_SPEC, projectOptions, 'projectOptions',
       'Configuration map that specifies the project inputs');
   assertMeetsSpec(BUILD_OPTIONS_SPEC, buildOptions, 'buildOptions',
@@ -348,4 +368,4 @@ function assertValid(projectOptions, buildOptions) {
 
 
 // Symbols exported by this internal module.
-module.exports = {assertValid: assertValid};
+module.exports = {assertValidAndFillDefaults: assertValidAndFillDefaults};

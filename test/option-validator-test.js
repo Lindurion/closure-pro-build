@@ -43,7 +43,6 @@ function newValidProjectOptions() {
         'closureRootNamespaces': ['project.secondary'],
       }
     },
-    'soyInputFiles': ['soy/*.soy'],
     'jsWarningsWhitelistFile': 'js_warnings_whitelist.txt'
   };
 }
@@ -55,7 +54,6 @@ function newValidBuildOptions() {
     'type': util.DEBUG,
     'outputDir': 'bin/',
     'python2Command': 'py2',
-    'suppressOutput': true
   };
 }
 
@@ -65,7 +63,7 @@ function newValidBuildOptions() {
 //==============================================================================
 
 describe('optionValidator', function() {
-  describe('#assertValid()', function() {
+  describe('#assertValidAndFillDefaults()', function() {
     var projectOpts, buildOpts;
     beforeEach(function() {
       // Reset to valid state before each test case.
@@ -74,7 +72,7 @@ describe('optionValidator', function() {
     });
 
     var runValidator = function() {
-      optionValidator.assertValid(projectOpts, buildOpts);
+      optionValidator.assertValidAndFillDefaults(projectOpts, buildOpts);
     }
 
     it('does not throw when given valid project and build options', function() {
@@ -180,6 +178,28 @@ describe('optionValidator', function() {
     it('does not throw when jsModules is an empty map', function() {
       projectOpts['jsModules'] = {};
       runValidator.should.not.throw();
+    });
+
+    it('fills in default values for those not provided', function() {
+      runValidator();
+
+      var cssModule = projectOpts['cssModule'];
+      should.equal(cssModule['name'], 'style');
+
+      var jsModules = projectOpts['jsModules'];
+      should.equal(jsModules['main']['dependsOnModules'].length, 0);
+      should.equal(
+          jsModules['secondary']['nonClosureNamespacedInputFiles'].length, 0);
+      should.equal(jsModules['secondary']['dontCompileInputFiles'].length, 0);
+
+      should.equal(projectOpts['closureRootDirs'].length, 1);
+      should.equal(projectOpts['closureRootDirs'][0], '.');
+      should.equal(projectOpts['soyInputFiles'], '**/*.soy');
+
+      should.equal(buildOpts['generatedCodeDir'], 'gen/');
+      should.equal(buildOpts['tempFileDir'], 'tmp/');
+      should.equal(buildOpts['javaCommand'], 'java');
+      should.equal(buildOpts['suppressOutput', false]);
     });
   });
 });
