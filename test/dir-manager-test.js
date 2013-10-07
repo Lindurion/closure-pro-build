@@ -14,11 +14,11 @@
 
 var dirManager = require('../dir-manager.js');
 
+var common = require('../common.js');
 var path = require('path');
 var should = require('should');
 var sinon = require('sinon');
 var underscore = require('underscore');
-var util = require('../util.js');
 
 
 //==============================================================================
@@ -44,7 +44,7 @@ function fakeMkdrip(dirPath, callbackFn) {
 var realPathJoin = path.join;
 function predictablePathJoin(var_args) {
   var realAnswer = realPathJoin.apply(null, arguments);
-  return realAnswer.replace(util.ALL_BACKSLASHES, '/');
+  return realAnswer.replace(common.ALL_BACKSLASHES, '/');
 }
 
 
@@ -106,7 +106,7 @@ describe('dirManager', function() {
 
     it('succeeds for default debug build options', function(callbackFn) {
       expectSuccess({
-        'type': util.DEBUG,
+        'type': common.DEBUG,
         'tempFileDir': 'tmp/',
         'generatedCodeDir': 'gen/',
         'outputDir': 'build/'
@@ -115,7 +115,7 @@ describe('dirManager', function() {
 
     it('succeeds for default release build options', function(callbackFn) {
       expectSuccess({
-        'type': util.RELEASE,
+        'type': common.RELEASE,
         'tempFileDir': 'tmp/',
         'generatedCodeDir': 'gen/',
         'outputDir': 'build/'
@@ -126,7 +126,7 @@ describe('dirManager', function() {
       letSucceed(['tmp/debug/', 'build/debug/']);
       letFail(['gen/debug/']);
       expectFailure({
-        'type': util.DEBUG,
+        'type': common.DEBUG,
         'tempFileDir': 'tmp/',
         'generatedCodeDir': 'gen/',
         'outputDir': 'build/'
@@ -136,7 +136,7 @@ describe('dirManager', function() {
     it('fails if all mkdirp() calls fail', function(callbackFn) {
       letFail(['tmp/release/', 'gen/release/', 'build/release/']);
       expectFailure({
-        'type': util.RELEASE,
+        'type': common.RELEASE,
         'tempFileDir': 'tmp/',
         'generatedCodeDir': 'gen/',
         'outputDir': 'build/'
@@ -145,7 +145,7 @@ describe('dirManager', function() {
 
     it('respects all custom buildOptions dirs', function(callbackFn) {
       expectSuccess({
-        'type': util.DEBUG,
+        'type': common.DEBUG,
         'tempFileDir': 'mytmp/',
         'generatedCodeDir': 'mygen/',
         'outputDir': 'mybuild/'
@@ -154,7 +154,7 @@ describe('dirManager', function() {
 
     it('converts backslashes to forward slashes', function(callbackFn) {
       expectSuccess({
-        'type': util.DEBUG,
+        'type': common.DEBUG,
         'tempFileDir': 'mytmp\\',
         'generatedCodeDir': 'gen/',
         'outputDir': 'build/'
@@ -163,7 +163,7 @@ describe('dirManager', function() {
 
     it('tolerates dirs without trailing slashes', function(callbackFn) {
       expectSuccess({
-        'type': util.RELEASE,
+        'type': common.RELEASE,
         'tempFileDir': 'mytmp',
         'generatedCodeDir': 'gen/',
         'outputDir': 'bin'

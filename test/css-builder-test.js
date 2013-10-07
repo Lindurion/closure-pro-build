@@ -15,6 +15,7 @@
 var cssBuilder = require('../css-builder.js');
 
 var child_process = require('child_process');
+var common = require('../common.js');
 var dirManager = require('../dir-manager.js');
 var fileMatcher = require('../file-matcher.js');
 var fs = require('fs');
@@ -24,7 +25,6 @@ var should = require('should');
 var sinon = require('sinon');
 var stream = require('stream');
 var underscore = require('underscore');
-var util = require('../util.js');
 
 
 //==============================================================================
@@ -45,7 +45,7 @@ function newProjectOptions() {
 
 function newBuildOptions() {
   return {
-    'type': util.DEBUG,
+    'type': common.DEBUG,
     'javaCommand': 'myjava',
     'suppressOutput': false,
     'tempFileDir': 'mytmp',
@@ -119,7 +119,7 @@ function fakeResolveAnyGlobPatternsAsync(filesAndPatterns, rootSrcDir) {
 var realPathJoin = path.join;
 function predictablePathJoin(var_args) {
   var realAnswer = realPathJoin.apply(null, arguments);
-  return realAnswer.replace(util.ALL_BACKSLASHES, '/');
+  return realAnswer.replace(common.ALL_BACKSLASHES, '/');
 }
 
 
@@ -211,7 +211,7 @@ describe('cssBuilder', function() {
       projectOpts = newProjectOptions();
       buildOpts = newBuildOptions();
       expectedStderrBehavior = process.stderr;
-      compilerExitCode = util.EXIT_SUCCESS;
+      compilerExitCode = common.EXIT_SUCCESS;
       readFileFailsFor = {};
       outDirsAsync = kew.defer();
       mockOutFile = new stream.Writable({});
@@ -220,13 +220,13 @@ describe('cssBuilder', function() {
     afterEach(function() { outFileExpectations.verify(); });
 
     var expectDebugCompile = function() {
-      buildOpts['type'] = util.DEBUG;
+      buildOpts['type'] = common.DEBUG;
       expectedArgs = newExpectedArgs(
           'DEBUG', 'mytmp/debug/css_renaming_map.js', true /* pretty? */);
       expectedOutFilePath = 'mybuild/debug/mystyle.css';
     };
     var expectReleaseCompile = function() {
-      buildOpts['type'] = util.RELEASE;
+      buildOpts['type'] = common.RELEASE;
       expectedArgs = newExpectedArgs(
           'CLOSURE', 'mytmp/release/css_renaming_map.js', false /* pretty? */);
       expectedOutFilePath = 'mybuild/release/mystyle.css';
@@ -335,7 +335,7 @@ describe('cssBuilder', function() {
     });
 
     it('fails if GSS compiler fails', function(callbackFn) {
-      compilerExitCode = util.EXIT_FAILURE;
+      compilerExitCode = common.EXIT_FAILURE;
 
       expectDebugCompile();
       runAndExpectFailure('GSS compilation failed', callbackFn);

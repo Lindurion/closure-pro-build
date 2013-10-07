@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var common = require('./common.js');
 var underscore = require('underscore');
-var util = require('./util.js');
 
 
 //==============================================================================
@@ -55,7 +55,7 @@ function assertBoolean(value, name, description) {
  * @param {string} description Description of the option.
  */
 function assertValidBuildType(value, name, description) {
-  if ((value != util.DEBUG) && (value != util.RELEASE)) {
+  if ((value != common.DEBUG) && (value != common.RELEASE)) {
     throw new Error('Invalid build type: <' + value + '>, must be ' +
         'closureProBuild.DEBUG or closureProBuild.RELEASE');
   }

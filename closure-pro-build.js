@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var common = require('./common.js');
 var cssBuilder = require('./css-builder.js');
 var dirManager = require('./dir-manager.js');
 var optionValidator = require('./option-validator.js');
-var util = require('./util.js');
 
 
 /**
@@ -52,6 +52,6 @@ function build(projectOptions, buildOptions, callbackFn) {
 // [Public API] Symbols exported by this module:
 module.exports = {
   build: build,
-  DEBUG: util.DEBUG,
-  RELEASE: util.RELEASE
+  DEBUG: common.DEBUG,
+  RELEASE: common.RELEASE
 };

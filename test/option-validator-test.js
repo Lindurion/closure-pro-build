@@ -14,8 +14,8 @@
 
 var optionValidator = require('../option-validator.js');
 
+var common = require('../common.js');
 var should = require('should');
-var util = require('../util.js');
 
 
 //==============================================================================
@@ -51,7 +51,7 @@ function newValidProjectOptions() {
 /** @return {!Object} */
 function newValidBuildOptions() {
   return {
-    'type': util.DEBUG,
+    'type': common.DEBUG,
     'outputDir': 'bin/',
     'python2Command': 'py2',
   };

@@ -13,10 +13,10 @@
 // limitations under the License.
 
 var async = require('async');
+var common = require('./common.js');
 var glob = require('glob');
 var kew = require('kew');
 var underscore = require('underscore');
-var util = require('./util.js');
 
 
 /** Regular expression to match file glob patterns. */
@@ -120,7 +120,7 @@ function insertResolvedFiles(filesAndPatterns, resolvedFiles) {
  * @return {string}
  */
 function convertBackslashes(filePath) {
-  return filePath.replace(util.ALL_BACKSLASHES, '/');
+  return filePath.replace(common.ALL_BACKSLASHES, '/');
 }
 
 

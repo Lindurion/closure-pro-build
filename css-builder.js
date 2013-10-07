@@ -14,11 +14,11 @@
 
 var async = require('async');
 var child_process = require('child_process');
+var common = require('./common.js');
 var fileMatcher = require('./file-matcher.js');
 var fs = require('fs');
 var kew = require('kew');
 var path = require('path');
-var util = require('./util.js');
 
 
 var GSS_COMPILER_PATH = path.join(__dirname,
@@ -148,7 +148,7 @@ function compileGssAsync(
 
   // When it is finished, also resolve CSS renaming file (which JS compilation
   // has to wait on).
-  return util.getStdoutString(gssCompilation)
+  return common.getStdoutString(gssCompilation)
       .then(function(compiledCss) {
         cssRenamingFileAsync.resolve(renamingFile);
         return compiledCss;
@@ -168,7 +168,7 @@ function compileGssAsync(
  */
 function getGssCompilerArgs(projectOptions, buildOptions, resolvedInputs,
     outDirs, renamingFile) {
-  var isDebug = (buildOptions['type'] == util.DEBUG);
+  var isDebug = (buildOptions['type'] == common.DEBUG);
 
   // Standard options:
   var args = [

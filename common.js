@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO: Rename this to something other than 'util', since node.js has a core
-// util module already...
-
 var kew = require('kew');
 
 
