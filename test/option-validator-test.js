@@ -28,7 +28,7 @@ function newValidProjectOptions() {
     'rootSrcDir': 'src/',
     'cssModule': {
       'description': 'Some styles',
-      'closureInputFiles': ['src/style.gss'],
+      'closureInputFiles': ['style.gss'],
       'dontCompileInputFiles': ['3p/3p.css'],
     },
     'jsModules': {

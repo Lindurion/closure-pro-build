@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// TODO: Rename this to something other than 'util', since node.js has a core
+// util module already...
+
+var kew = require('kew');
+
+
 /** Regular expression to match all backslashes in a path. */
 var ALL_BACKSLASHES = /\\/g;
 
@@ -21,10 +27,43 @@ var DEBUG = 'debug';
 /** Constant indicating a release build. */
 var RELEASE = 'release';
 
+/** Successful process exit code. */
+var EXIT_SUCCESS = 0;
+
+/** Failed process exit code. */
+var EXIT_FAILURE = 1;
+
+
+/**
+ * @param {!ChildProcess} childProcess
+ * @return {!Promise.<string>} Yields string of stdout output once the stream
+ *     is closed (usually when childProcess exits).
+ */
+function getStdoutString(childProcess) {
+  var output = '';
+  childProcess.stdout.setEncoding('utf8');
+  childProcess.stdout.on('data', function(data) {
+    output += data;
+  });
+
+  var promise = kew.defer();
+  childProcess.on('close', function(exitCode) {
+    if (exitCode != EXIT_SUCCESS) {
+      promise.reject(new Error('Child process failed with code ' + exitCode));
+    } else {
+      promise.resolve(output);
+    }
+  });
+  return promise;
+}
+
 
 // Symbols exported by this internal module.
 module.exports = {
   ALL_BACKSLASHES: ALL_BACKSLASHES,
   DEBUG: DEBUG,
-  RELEASE: RELEASE
+  EXIT_FAILURE: EXIT_FAILURE,
+  EXIT_SUCCESS: EXIT_SUCCESS,
+  RELEASE: RELEASE,
+  getStdoutString: getStdoutString
 };

@@ -12,8 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+var async = require('async');
+var child_process = require('child_process');
 var fileMatcher = require('./file-matcher.js');
+var fs = require('fs');
 var kew = require('kew');
+var path = require('path');
+var util = require('./util.js');
+
+
+var GSS_COMPILER_PATH = path.join(__dirname,
+    '3p/closure-stylesheets-20130208/closure-stylesheets.jar');
 
 
 /**
@@ -24,7 +33,7 @@ var kew = require('kew');
  *     README.md for option documentation.
  * @param {!Object} buildOptions Specifies options specific to this build (like
  *     debug/release); see README.md for option documentation.
- * @param {!Promise.<!OutputDirs>}
+ * @param {!Promise.<!OutputDirs>} outDirsAsync
  * @return {!BuildingCss} Object that allows tracking output of CSS renaming map
  *     (if any) and overall CSS build completion.
  */
@@ -39,18 +48,20 @@ function build(projectOptions, buildOptions, outDirsAsync) {
 
   // Then compile GSS (which outputs CSS renaming file) and concat the
   // dontCompileInputFiles with the compiled output for the final CSS file.
-  var cssRenamingFile = kew.defer();
+  var cssRenamingFileAsync = kew.defer();
   var completionAsync = outDirsAsync.then(function(outDirs) {
     return inputsAsync
         .then(function(resolvedInputs) {
-          return compileGssAsync(projectOptions, buildOptions,
-              resolvedInputs, outDirs, cssRenamingFile);
-        }).then(function() {
-          return outputFinalCssAsync(projectOptions, resolvedInputs, outDirs);
+          var gssAsync = compileGssAsync(projectOptions, buildOptions,
+              resolvedInputs, outDirs, cssRenamingFileAsync);
+          return gssAsync.then(function(compiledCss) {
+            return outputFinalCssAsync(compiledCss, projectOptions,
+                resolvedInputs, outDirs);
+          });
         });
   });
 
-  return new BuildingCss(cssRenamingFile.promise, completionAsync);
+  return new BuildingCss(cssRenamingFileAsync, completionAsync);
 }
 
 
@@ -77,10 +88,14 @@ BuildingCss.prototype.awaitCompletion = function() {
 };
 
 
+//==============================================================================
+// 1. Resolve Input Files
+//==============================================================================
+
 /**
  * @param {!Object} projectOptions Specifies the project input files; see
  *     README.md for option documentation.
- * @return {!Promise} Map with closure and dontCompile file list properties.
+ * @return {!Promise} Yields map with closure and dontCompile file lists.
  */
 function resolveInputsAsync(projectOptions) {
   var cssModule = projectOptions['cssModule'];
@@ -88,9 +103,9 @@ function resolveInputsAsync(projectOptions) {
 
   var tasks = [];
   tasks.push(fileMatcher.resolveAnyGlobPatternsAsync(
-      cssModule['closureInputFiles'] || [], rootSrcDir));
+      cssModule['closureInputFiles'], rootSrcDir));
   tasks.push(fileMatcher.resolveAnyGlobPatternsAsync(
-      cssModule['dontCompileInputFiles'] || [], rootSrcDir));
+      cssModule['dontCompileInputFiles'], rootSrcDir));
 
   return kew.all(tasks)
       .then(function(results) {
@@ -99,5 +114,166 @@ function resolveInputsAsync(projectOptions) {
 }
 
 
+//==============================================================================
+// 2. Invoke GSS Compiler
+//==============================================================================
+
+/**
+ * If needed, invokes GSS compiler to build all resolved closureInputFiles.
+ * @param {!Object} projectOptions
+ * @param {!Object} buildOptions
+ * @param {!{closure: !Array.<string>, dontCompile: !Array.<string>}}
+ *     resolvedInputs
+ * @param {!OutputDirs} outDirs
+ * @param {!Promise.<?string>} cssRenamingFileAsync
+ * @return {!Promise.<string>} Yields compiled CSS (empty string if none).
+ */
+function compileGssAsync(
+    projectOptions, buildOptions, resolvedInputs, outDirs,
+    cssRenamingFileAsync) {
+  // If there are no resolved Closure input files: no-op.
+  if (resolvedInputs.closure.length == 0) {
+    cssRenamingFileAsync.resolve(null);
+    return kew.resolve('');
+  }
+
+  // Spawn GSS compiler in a child process.
+  var renamingFile = path.join(outDirs.tmp, 'css_renaming_map.js');
+  var gssCompilerArgs = getGssCompilerArgs(projectOptions, buildOptions,
+      resolvedInputs, outDirs, renamingFile);
+
+  var stderrBehavior = buildOptions.suppressOutput ? 'ignore' : process.stderr;
+  var gssCompilation = child_process.spawn(buildOptions.javaCommand,
+      gssCompilerArgs, {stdio: ['ignore', 'pipe', stderrBehavior]});
+
+  // When it is finished, also resolve CSS renaming file (which JS compilation
+  // has to wait on).
+  return util.getStdoutString(gssCompilation)
+      .then(function(compiledCss) {
+        cssRenamingFileAsync.resolve(renamingFile);
+        return compiledCss;
+      })
+      .fail(function(e) { throw new Error('GSS compilation failed: ' + e); });
+}
+
+
+/**
+ * @param {!Object} projectOptions
+ * @param {!Object} buildOptions
+ * @param {!{closure: !Array.<string>, dontCompile: !Array.<string>}}
+ *     resolvedInputs
+ * @param {!OutputDirs} outDirs
+ * @param {string} renamingFile
+ * @return {!Array.<string>} Command-line args for GSS compiler.
+ */
+function getGssCompilerArgs(projectOptions, buildOptions, resolvedInputs,
+    outDirs, renamingFile) {
+  var isDebug = (buildOptions['type'] == util.DEBUG);
+
+  // Standard options:
+  var args = [
+    '-jar',
+    GSS_COMPILER_PATH,
+    '--rename',
+    isDebug ? 'DEBUG' : 'CLOSURE',
+    '--output-renaming-map',
+    renamingFile,
+    '--output-renaming-map-format',
+    'CLOSURE_COMPILED'
+  ];
+
+  // Input GSS/CSS files:
+  args = args.concat(resolvedInputs.closure);
+
+  // TODO: Add support for --allow-unrecognized-property,
+  // --excluded-classes-from-renaming, --input-orientation, and
+  // --output-orientation.
+
+  // Debug-specific options:
+  if (isDebug) {
+    args.push('--pretty-print');
+  }
+
+  return args;
+}
+
+
+//==============================================================================
+// 3. Prepend Non-Compiled CSS to Output Final Result
+//==============================================================================
+
+/**
+ * @param {string} compiledCss
+ * @param {!Object} projectOptions
+ * @param {!{closure: !Array.<string>, dontCompile: !Array.<string>}}
+ *     resolvedInputs
+ * @param {!OutputDirs} outDirs
+ * @return {!Promise} To track success/failure.
+ */
+function outputFinalCssAsync(
+    compiledCss, projectOptions, resolvedInputs, outDirs) {
+  // Create final output CSS file.
+  var outputCssFile = fs.createWriteStream(
+      path.join(outDirs.build, projectOptions['cssModule']['name'] + '.css'),
+      {encoding: 'utf8'});
+
+  // Write all uncompiled CSS, then write compiledCss & close output file.
+  return writeUncompiledCssAsync(resolvedInputs, outputCssFile)
+      .then(function() {
+        // TODO: Switch to kew.nfcall() when ready...
+        var promise = kew.defer();
+        outputCssFile.end(compiledCss, 'utf8', promise.makeNodeResolver());
+        return promise;
+      });
+}
+
+
+/**
+ * @param {!{closure: !Array.<string>, dontCompile: !Array.<string>}}
+ *     resolvedInputs
+ * @param {!fs.WriteStream} outputCssFile
+ * @return {!Promise} To track success/failure.
+ */
+function writeUncompiledCssAsync(resolvedInputs, outputCssFile) {
+  // Write each file in series.
+  var queuedWrites = resolvedInputs.dontCompile.map(function(filePath) {
+    return function(callbackFn) {
+      writeUncompiledFileToOutputAsync(filePath, outputCssFile)
+          .then(function() { callbackFn(null); })
+          .fail(function(e) { callbackFn(e); });
+    }
+  });
+
+  // TODO: Switch to kew.nfcall() when ready...
+  var promise = kew.defer();
+  async.series(queuedWrites, promise.makeNodeResolver());
+  return promise;
+}
+
+
+/**
+ * @param {string} filePath
+ * @param {!fs.WriteStream} outputCssFile
+ * @return {!Promise} To track success/failure.
+ */
+function writeUncompiledFileToOutputAsync(filePath, outputCssFile) {
+  // Read input file in to string.
+  // TODO: Switch to kew.nfcall() when ready...
+  var readAsync = kew.defer();
+  fs.readFile(filePath, {encoding: 'utf8'}, readAsync.makeNodeResolver());
+
+  // Then write it to the output CSS file.
+  return readAsync.then(function(uncompiledCss) {
+    // TODO: Switch to kew.nfcall() when ready...
+    var writeAsync = kew.defer();
+    outputCssFile.write(uncompiledCss, 'utf8', writeAsync.makeNodeResolver());
+    return writeAsync;
+  });
+}
+
+
 // Symbols exported by this internal module.
-module.exports = {build: build};
+module.exports = {
+  GSS_COMPILER_PATH: GSS_COMPILER_PATH,
+  build: build
+};

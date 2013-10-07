@@ -14,6 +14,7 @@
 
 var dirManager = require('../dir-manager.js');
 
+var path = require('path');
 var should = require('should');
 var sinon = require('sinon');
 var underscore = require('underscore');
@@ -27,7 +28,7 @@ var util = require('../util.js');
 // Fake mkdirp() behavior set by each test case.
 var theseDirsSucceed, theseDirsFail;
 
-sinon.stub(dirManager.testable, 'mkdirp', function(dirPath, callbackFn) {
+function fakeMkdrip(dirPath, callbackFn) {
   // Succeed or fail mkdirp() call async, depending on test case setup.
   if (theseDirsSucceed[dirPath]) {
     setTimeout(underscore.partial(callbackFn, null), 2 /* ms */);
@@ -36,7 +37,15 @@ sinon.stub(dirManager.testable, 'mkdirp', function(dirPath, callbackFn) {
   } else {
     throw new Error('Not expecting mkdirp() call for path ' + dirPath);
   }
-});
+}
+
+// Stub path.join() to always return paths with forward slashes, so that tests
+// can work easily on all platforms.
+var realPathJoin = path.join;
+function predictablePathJoin(var_args) {
+  var realAnswer = realPathJoin.apply(null, arguments);
+  return realAnswer.replace(util.ALL_BACKSLASHES, '/');
+}
 
 
 //==============================================================================
@@ -44,6 +53,16 @@ sinon.stub(dirManager.testable, 'mkdirp', function(dirPath, callbackFn) {
 //==============================================================================
 
 describe('dirManager', function() {
+  var stubMkdirp, stubPathJoin;
+  before(function() {
+    stubMkdirp = sinon.stub(dirManager.testable, 'mkdirp', fakeMkdrip);
+    stubPathJoin = sinon.stub(path, 'join', predictablePathJoin);
+  });
+  after(function() {
+    stubMkdirp.restore();
+    stubPathJoin.restore();
+  });
+
   describe('#createOutputDirsAsync()', function() {
     beforeEach(function() {
       // Reset state before each test.

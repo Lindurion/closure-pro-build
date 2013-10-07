@@ -34,7 +34,7 @@ var FAKE_RESOLUTIONS = {
   'sub\\\\*.js': ['sub\\f3.js', 'sub\\f4.js']
 };
 
-sinon.stub(glob, 'Glob', function(pattern, options, callbackFn) {
+function fakeGlob(pattern, options, callbackFn) {
   should.deepEqual(options, {cwd: ROOT_SRC_DIR});
 
   if (pattern == '*fail-for-test*') {
@@ -49,7 +49,7 @@ sinon.stub(glob, 'Glob', function(pattern, options, callbackFn) {
 
   // Return answer async.
   setTimeout(underscore.partial(callbackFn, null, resolvedFiles), 2 /* ms */);
-});
+}
 
 
 //==============================================================================
@@ -57,6 +57,10 @@ sinon.stub(glob, 'Glob', function(pattern, options, callbackFn) {
 //==============================================================================
 
 describe('fileMatcher', function() {
+  var stubGlob;
+  before(function() { stubGlob = sinon.stub(glob, 'Glob', fakeGlob); });
+  after(function() { stubGlob.restore(); });
+
   describe('#resolveAnyGlobPatterns()', function() {
     var inputFiles;
     beforeEach(function() {

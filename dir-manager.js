@@ -14,8 +14,8 @@
 
 var kew = require('kew');
 var mkdirp = require('mkdirp');
+var path = require('path');
 var underscore = require('underscore');
-var util = require('./util.js');
 
 // Allow mkdirp to be stubbed in tests.
 var testable = {mkdirp: mkdirp};
@@ -63,15 +63,11 @@ function OutputDirs(buildOptions) {
 /**
  * @param {string} dirPath
  * @param {string} buildType
- * @return {string} The input path, standardized with forward slashes, with
+ * @return {string} The input path, standardized for the current platform, with
  *     a subdirectory for the current build type (debug/ or relase/) added.
  */
 function getOutputDir(dirPath, buildType) {
-  var standardizedPath = dirPath.replace(util.ALL_BACKSLASHES, '/');
-  if (standardizedPath.charAt(standardizedPath.length - 1) != '/') {
-    standardizedPath += '/';
-  }
-  return standardizedPath + buildType + '/';
+  return path.join(dirPath, buildType + '/');
 }
 
 
@@ -90,6 +86,7 @@ function makeDirAndParents(dirPath) {
 
 // Symbols exported by this internal module.
 module.exports = {
+  OutputDirs: OutputDirs,
   createOutputDirsAsync: createOutputDirsAsync,
   testable: testable
 };
