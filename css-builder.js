@@ -142,8 +142,9 @@ function compileGssAsync(
   var gssCompilerArgs = getGssCompilerArgs(projectOptions, buildOptions,
       resolvedInputs, outDirs, renamingFile);
 
-  var stderrBehavior = buildOptions.suppressOutput ? 'ignore' : process.stderr;
-  var gssCompilation = child_process.spawn(buildOptions.javaCommand,
+  var stderrBehavior =
+      buildOptions['suppressOutput'] ? 'ignore' : process.stderr;
+  var gssCompilation = child_process.spawn(buildOptions['javaCommand'],
       gssCompilerArgs, {stdio: ['ignore', 'pipe', stderrBehavior]});
 
   // When it is finished, also resolve CSS renaming file (which JS compilation

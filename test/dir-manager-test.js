@@ -18,6 +18,7 @@ var common = require('../common.js');
 var path = require('path');
 var should = require('should');
 var sinon = require('sinon');
+var testUtil = require('./test-util.js');
 var underscore = require('underscore');
 
 
@@ -39,14 +40,6 @@ function fakeMkdrip(dirPath, callbackFn) {
   }
 }
 
-// Stub path.join() to always return paths with forward slashes, so that tests
-// can work easily on all platforms.
-var realPathJoin = path.join;
-function predictablePathJoin(var_args) {
-  var realAnswer = realPathJoin.apply(null, arguments);
-  return realAnswer.replace(common.ALL_BACKSLASHES, '/');
-}
-
 
 //==============================================================================
 // Test Cases
@@ -56,7 +49,7 @@ describe('dirManager', function() {
   var stubMkdirp, stubPathJoin;
   before(function() {
     stubMkdirp = sinon.stub(dirManager.testable, 'mkdirp', fakeMkdrip);
-    stubPathJoin = sinon.stub(path, 'join', predictablePathJoin);
+    stubPathJoin = sinon.stub(path, 'join', testUtil.pathJoin);
   });
   after(function() {
     stubMkdirp.restore();

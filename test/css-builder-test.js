@@ -24,6 +24,7 @@ var path = require('path');
 var should = require('should');
 var sinon = require('sinon');
 var stream = require('stream');
+var testUtil = require('./test-util.js');
 var underscore = require('underscore');
 
 
@@ -97,30 +98,14 @@ var EXPECTED_OUTPUT_CSS = EXPECTED_UNCOMPILED_CSS + EXPECTED_COMPILED_CSS;
 // Stubbed Functions
 //==============================================================================
 
-function fakeResolveAnyGlobPatternsAsync(filesAndPatterns, rootSrcDir) {
-  var resolvedFiles;
-  if (underscore.isEqual(filesAndPatterns, [])) {
-    resolvedFiles = [];
-  } else if (underscore.isEqual(filesAndPatterns, ['style.gss', 'css/*.css'])) {
-    resolvedFiles = ['style.gss', 'css/one.css', 'css/two.css'];
-  } else if (underscore.isEqual(filesAndPatterns, ['3p/style/*.css'])) {
-    resolvedFiles = ['3p/style/a.css', '3p/style/b.css'];
-  } else {
-    throw new Error('Not expecting resolveAnyGlobPatternsAsync() call for ' +
-        filesAndPatterns);
-  }
-
-  return kew.delay(2 /* ms */, resolvedFiles);
-}
-
-
-// Stub path.join() to always return paths with forward slashes, so that tests
-// can work easily on all platforms.
-var realPathJoin = path.join;
-function predictablePathJoin(var_args) {
-  var realAnswer = realPathJoin.apply(null, arguments);
-  return realAnswer.replace(common.ALL_BACKSLASHES, '/');
-}
+var fakeResolveAnyGlobPatternsAsync = testUtil.fakeFileMatcherFor('src/', [
+  {in: [], out: []},
+  {
+    in: ['style.gss', 'css/*.css'],
+    out: ['style.gss', 'css/one.css', 'css/two.css']
+  },
+  {in: ['3p/style/*.css'], out: ['3p/style/a.css', '3p/style/b.css']},
+]);
 
 
 var expectedArgs, expectedStderrBehavior, compilerExitCode;
@@ -190,7 +175,7 @@ describe('cssBuilder', function() {
   before(function() {
     stubResolve = sinon.stub(fileMatcher, 'resolveAnyGlobPatternsAsync',
         fakeResolveAnyGlobPatternsAsync);
-    stubPathJoin = sinon.stub(path, 'join', predictablePathJoin);
+    stubPathJoin = sinon.stub(path, 'join', testUtil.pathJoin);
     stubSpawn = sinon.stub(child_process, 'spawn', fakeSpawn);
     stubCreateWriteStream = sinon.stub(fs, 'createWriteStream',
         fakeCreateWriteStream);

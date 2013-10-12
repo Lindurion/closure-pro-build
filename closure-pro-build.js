@@ -15,7 +15,9 @@
 var common = require('./common.js');
 var cssBuilder = require('./css-builder.js');
 var dirManager = require('./dir-manager.js');
+var kew = require('kew');
 var optionValidator = require('./option-validator.js');
+var soyBuilder = require('./soy-builder.js');
 
 
 /**
@@ -35,17 +37,16 @@ function build(projectOptions, buildOptions, callbackFn) {
   var buildingCss =
       cssBuilder.build(projectOptions, buildOptions, outDirsAsync);
 
-// var soyJsAsync = soyBuilder.build(projectOptions, buildOptions, outDirsAsync)
-//     .then(function() {
-//       return jsBuilder.build(projectOptions, buildOptions, outDirsAsync,
-//           buildingCss.getCssRenamingFileAsync()));
-//     });
-//
-// kew.all([buildingCss.awaitCompletion(), soyJsAsync])
-//     .then(function() { callbackFn(null); })
-//     .fail(callbackFn);
+  var soyJsAsync = soyBuilder.build(projectOptions, buildOptions, outDirsAsync)
+     .then(function() {
+       throw new Error('JS compilation not implemented yet');
+//     return jsBuilder.build(projectOptions, buildOptions, outDirsAsync,
+//         buildingCss.getCssRenamingFileAsync()));
+     });
 
-  callbackFn(new Error('Not implemented yet'));
+  kew.all([buildingCss.awaitCompletion(), soyJsAsync])
+     .then(function() { callbackFn(null); })
+     .fail(callbackFn);
 }
 
 
