@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var fileMatcher = require('../file-matcher.js');
+var fileMatcher = require('../lib/file-matcher.js');
 
 var glob = require('glob');
 var should = require('should');

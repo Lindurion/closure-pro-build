@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var soyBuilder = require('../soy-builder.js');
+var soyBuilder = require('../lib/soy-builder.js');
 
 var child_process = require('child_process');
-var common = require('../common.js');
-var dirManager = require('../dir-manager.js');
-var fileMatcher = require('../file-matcher.js');
+var common = require('../lib/common.js');
+var dirManager = require('../lib/dir-manager.js');
+var fileMatcher = require('../lib/file-matcher.js');
 var kew = require('kew');
 var path = require('path');
 var should = require('should');

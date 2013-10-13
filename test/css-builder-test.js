@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var cssBuilder = require('../css-builder.js');
+var cssBuilder = require('../lib/css-builder.js');
 
 var child_process = require('child_process');
-var common = require('../common.js');
-var dirManager = require('../dir-manager.js');
-var fileMatcher = require('../file-matcher.js');
+var common = require('../lib/common.js');
+var dirManager = require('../lib/dir-manager.js');
+var fileMatcher = require('../lib/file-matcher.js');
 var fs = require('fs');
 var kew = require('kew');
 var path = require('path');

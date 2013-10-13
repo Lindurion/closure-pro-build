@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var dirManager = require('../dir-manager.js');
+var dirManager = require('../lib/dir-manager.js');
 
-var common = require('../common.js');
+var common = require('../lib/common.js');
 var path = require('path');
 var should = require('should');
 var sinon = require('sinon');

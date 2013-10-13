@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var optionValidator = require('../option-validator.js');
+var optionValidator = require('../lib/option-validator.js');
 
-var common = require('../common.js');
+var common = require('../lib/common.js');
 var should = require('should');
 
 

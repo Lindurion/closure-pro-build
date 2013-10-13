@@ -21,7 +21,7 @@
     "email": "eric@EricWBarndollar.com",
     "url": "https://github.com/Lindurion"
   },
-  "main": "./closure-pro-build.js",
+  "main": "./lib/closure-pro-build.js",
   "scripts": {
     "test": "mocha --check-leaks"
   },
