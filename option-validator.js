@@ -165,10 +165,10 @@ function assertMeetsSpec(spec, value, name, description) {
 function assertValidCssModuleSpec(value, name, description) {
   assertMeetsSpec(CSS_MODULE_SPEC, value, name, description);
 
-  var hasClosureInputFiles = (value['closureInputFiles'] &&
-      (value['closureInputFiles'].length >= 1));
-  var hasDontCompileInputFiles = (value['dontCompileInputFiles'] &&
-      (value['dontCompileInputFiles'].length >= 1));
+  var hasClosureInputFiles = (value.closureInputFiles &&
+      (value.closureInputFiles.length >= 1));
+  var hasDontCompileInputFiles = (value.dontCompileInputFiles &&
+      (value.dontCompileInputFiles.length >= 1));
   if (!hasClosureInputFiles && !hasDontCompileInputFiles) {
     throw new Error('Must specify at least one input CSS or GSS file, ' + name);
   }
@@ -183,13 +183,13 @@ function assertValidCssModuleSpec(value, name, description) {
 function assertValidJsModuleSpec(value, name, description) {
   assertMeetsSpec(JS_MODULE_SPEC, value, name, description);
 
-  var hasClosureRootNamespaces = (value['closureRootNamespaces'] &&
-      (value['closureRootNamespaces'].length >= 1));
+  var hasClosureRootNamespaces = (value.closureRootNamespaces &&
+      (value.closureRootNamespaces.length >= 1));
   var hasNonClosureNamespacedInputFiles =
-      (value['nonClosureNamespacedInputFiles'] &&
-          (value['nonClosureNamespacedInputFiles'].length >= 1));
-  var hasDontCompileInputFiles = (value['dontCompileInputFiles'] &&
-      (value['dontCompileInputFiles'].length >= 1));
+      (value.nonClosureNamespacedInputFiles &&
+          (value.nonClosureNamespacedInputFiles.length >= 1));
+  var hasDontCompileInputFiles = (value.dontCompileInputFiles &&
+      (value.dontCompileInputFiles.length >= 1));
   if (!hasClosureRootNamespaces && !hasNonClosureNamespacedInputFiles &&
       !hasDontCompileInputFiles) {
     throw new Error('Must specify at least one root Closure namespace ' +

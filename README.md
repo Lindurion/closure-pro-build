@@ -39,11 +39,11 @@ Sample usage for a project using a CSS module (for application and 3rd party CSS
         dontCompileInputFiles: ['path/to/some/third_party.css']
       },
       jsModules: {
-        'page': {
+        page: {
           description: 'Soy template for shell HTML, loads main JS and CSS',
           closureRootNamespaces: ['sample.page']
         },
-        'main': {
+        main: {
           description: 'Main JS module, with all client-side JS',
           closureRootNamespaces: ['sample.main'],
           nonClosureNamespacedInputFiles: ['path/to/jquery.js'],

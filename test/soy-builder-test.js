@@ -67,7 +67,7 @@ function newExpectedArgs(expectedInputFiles) {
     '--inputPrefix',
     'src/',
     '--outputPathFormat',
-    'mygen/{INPUT_DIRECTORY}/{INPUT_FILE_NAME}.js',
+    'mygen/debug/{INPUT_DIRECTORY}/{INPUT_FILE_NAME}.js',
     '--srcs',
     expectedInputFiles.join(',')
   ];

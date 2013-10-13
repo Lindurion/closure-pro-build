@@ -205,13 +205,13 @@ describe('cssBuilder', function() {
     afterEach(function() { outFileExpectations.verify(); });
 
     var expectDebugCompile = function() {
-      buildOpts['type'] = common.DEBUG;
+      buildOpts.type = common.DEBUG;
       expectedArgs = newExpectedArgs(
           'DEBUG', 'mytmp/debug/css_renaming_map.js', true /* pretty? */);
       expectedOutFilePath = 'mybuild/debug/mystyle.css';
     };
     var expectReleaseCompile = function() {
-      buildOpts['type'] = common.RELEASE;
+      buildOpts.type = common.RELEASE;
       expectedArgs = newExpectedArgs(
           'CLOSURE', 'mytmp/release/css_renaming_map.js', false /* pretty? */);
       expectedOutFilePath = 'mybuild/release/mystyle.css';
@@ -272,7 +272,7 @@ describe('cssBuilder', function() {
     };
 
     it('is a no-op when cssModule not given', function(callbackFn) {
-      delete projectOpts['cssModule'];
+      delete projectOpts.cssModule;
       runAndExpectSuccess(null, callbackFn);
     });
 
@@ -287,7 +287,7 @@ describe('cssBuilder', function() {
 
     it('compiles a dontCompileInputFiles-only project successfully',
         function(callbackFn) {
-      projectOpts['cssModule']['closureInputFiles'] = [];
+      projectOpts.cssModule.closureInputFiles = [];
 
       expectDebugCompile();
       expectOutputWrites(OK, OK, EMPTY);
@@ -298,7 +298,7 @@ describe('cssBuilder', function() {
 
     it('compiles a closureInputFiles-only project successfully',
         function(callbackFn) {
-      projectOpts['cssModule']['dontCompileInputFiles'] = [];
+      projectOpts.cssModule.dontCompileInputFiles = [];
 
       expectReleaseCompile();
       expectOutputWrites(SKIP, SKIP, OK);
@@ -309,7 +309,7 @@ describe('cssBuilder', function() {
 
     it('suppresses compiler standard error output if requested',
         function(callbackFn) {
-      buildOpts['suppressOutput'] = true;
+      buildOpts.suppressOutput = true;
       expectedStderrBehavior = 'ignore';
 
       expectReleaseCompile();

@@ -50,7 +50,7 @@ function build(projectOptions, buildOptions, outDirsAsync) {
  */
 function resolveSoyInputFiles(projectOptions) {
   return fileMatcher.resolveAnyGlobPatternsAsync(
-      projectOptions['soyInputFiles'], projectOptions['rootSrcDir']);
+      projectOptions.soyInputFiles, projectOptions.rootSrcDir);
 }
 
 
@@ -81,18 +81,16 @@ function compileSoy(projectOptions, buildOptions, outDirs, soyInputFiles) {
     '--useGoogIsRtlForBidiGlobalDir',
     '--shouldGenerateJsdoc',
     '--inputPrefix',
-    projectOptions['rootSrcDir'],
+    projectOptions.rootSrcDir,
     '--outputPathFormat',
     outDirs.gen + '{INPUT_DIRECTORY}/{INPUT_FILE_NAME}.js',
     '--srcs',
     soyInputFiles.join(',')
   ];
 
-  var stdoutBehavior =
-      buildOptions['suppressOutput'] ? 'ignore' : process.stdout;
-  var stderrBehavior =
-      buildOptions['suppressOutput'] ? 'ignore' : process.stderr;
-  var soyCompilation = child_process.spawn(buildOptions['javaCommand'],
+  var stdoutBehavior = buildOptions.suppressOutput ? 'ignore' : process.stdout;
+  var stderrBehavior = buildOptions.suppressOutput ? 'ignore' : process.stderr;
+  var soyCompilation = child_process.spawn(buildOptions.javaCommand,
       soyCompilerArgs, {stdio: ['ignore', stdoutBehavior, stderrBehavior]});
 
   var promise = kew.defer();

@@ -39,7 +39,7 @@ var GSS_COMPILER_PATH = path.join(__dirname,
  */
 function build(projectOptions, buildOptions, outDirsAsync) {
   // Nothing to do if no CSS module is specified.
-  if (!projectOptions['cssModule']) {
+  if (!projectOptions.cssModule) {
     return new BuildingCss(kew.resolve(null), kew.resolve(null));
   }
 
@@ -98,14 +98,14 @@ BuildingCss.prototype.awaitCompletion = function() {
  * @return {!Promise} Yields map with closure and dontCompile file lists.
  */
 function resolveInputsAsync(projectOptions) {
-  var cssModule = projectOptions['cssModule'];
-  var rootSrcDir = projectOptions['rootSrcDir'];
+  var cssModule = projectOptions.cssModule;
+  var rootSrcDir = projectOptions.rootSrcDir;
 
   var tasks = [];
   tasks.push(fileMatcher.resolveAnyGlobPatternsAsync(
-      cssModule['closureInputFiles'], rootSrcDir));
+      cssModule.closureInputFiles, rootSrcDir));
   tasks.push(fileMatcher.resolveAnyGlobPatternsAsync(
-      cssModule['dontCompileInputFiles'], rootSrcDir));
+      cssModule.dontCompileInputFiles, rootSrcDir));
 
   return kew.all(tasks)
       .then(function(results) {
@@ -142,9 +142,8 @@ function compileGssAsync(
   var gssCompilerArgs = getGssCompilerArgs(projectOptions, buildOptions,
       resolvedInputs, outDirs, renamingFile);
 
-  var stderrBehavior =
-      buildOptions['suppressOutput'] ? 'ignore' : process.stderr;
-  var gssCompilation = child_process.spawn(buildOptions['javaCommand'],
+  var stderrBehavior = buildOptions.suppressOutput ? 'ignore' : process.stderr;
+  var gssCompilation = child_process.spawn(buildOptions.javaCommand,
       gssCompilerArgs, {stdio: ['ignore', 'pipe', stderrBehavior]});
 
   // When it is finished, also resolve CSS renaming file (which JS compilation
@@ -169,7 +168,7 @@ function compileGssAsync(
  */
 function getGssCompilerArgs(projectOptions, buildOptions, resolvedInputs,
     outDirs, renamingFile) {
-  var isDebug = (buildOptions['type'] == common.DEBUG);
+  var isDebug = (buildOptions.type == common.DEBUG);
 
   // Standard options:
   var args = [
@@ -215,7 +214,7 @@ function outputFinalCssAsync(
     compiledCss, projectOptions, resolvedInputs, outDirs) {
   // Create final output CSS file.
   var outputCssFile = fs.createWriteStream(
-      path.join(outDirs.build, projectOptions['cssModule']['name'] + '.css'),
+      path.join(outDirs.build, projectOptions.cssModule.name + '.css'),
       {encoding: 'utf8'});
 
   // Write all uncompiled CSS, then write compiledCss & close output file.

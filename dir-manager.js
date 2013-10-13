@@ -47,16 +47,13 @@ function createOutputDirsAsync(buildOptions) {
  */
 function OutputDirs(buildOptions) {
   /** @type {string} */
-  this.tmp = getOutputDir(
-      buildOptions['tempFileDir'], buildOptions['type']);
+  this.tmp = getOutputDir(buildOptions.tempFileDir, buildOptions.type);
 
   /** @type {string} */
-  this.gen = getOutputDir(
-      buildOptions['generatedCodeDir'], buildOptions['type']);
+  this.gen = getOutputDir(buildOptions.generatedCodeDir, buildOptions.type);
 
   /** @type {string} */
-  this.build = getOutputDir(
-      buildOptions['outputDir'], buildOptions['type']);
+  this.build = getOutputDir(buildOptions.outputDir, buildOptions.type);
 }
 
 
