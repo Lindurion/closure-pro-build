@@ -83,7 +83,7 @@ function compileSoy(projectOptions, buildOptions, outDirs, soyInputFiles) {
     '--inputPrefix',
     projectOptions['rootSrcDir'],
     '--outputPathFormat',
-    buildOptions['generatedCodeDir'] + '{INPUT_DIRECTORY}/{INPUT_FILE_NAME}.js',
+    outDirs.gen + '{INPUT_DIRECTORY}/{INPUT_FILE_NAME}.js',
     '--srcs',
     soyInputFiles.join(',')
   ];
