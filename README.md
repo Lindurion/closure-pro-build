@@ -95,7 +95,7 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 - **jsModules**: JS Object map from module name (determines output JS filename) to an object with these properties:
   - **description**: String that describes the module (for documentation).
   - **alwaysLoadedAfterModules**: (If any) List of JS module names that this module depends on (that will always be loaded before this one). Only immediate deps need to be specified; will automatically consider transitive dependencies.
-  - **closureRootNamespaces**: (If any) List of the root Closure namespace(s) that transitively `goog.require()` all the Closure-namespaced JS that should be included in this module.
+  - **closureRootNamespaces**: (If any) List of the root Closure namespace(s) that transitively `goog.require()` all the Closure-namespaced JS that should be included in this module. This code can rely on all `nonClosureNamespacedInputFiles` and `dontCompileInputFiles` from this module (and parent modules) having been loaded first.
   - **nonClosureNamespacedInputFiles**: (If any) List of the JS files that do NOT use `goog.require()` or `goog.provide()` but that should still be compiled (including symbol renaming) by the Closure JS Compiler. These files must be specified in dependency order (such that a file only depends on files listed before it being loaded). These files will be loaded after any `dontCompileInputFiles`.
   - **dontCompileInputFiles**: (If any) List of JS files that should NOT be compiled or minified by the Closure JS compiler. These files must be specified in dependency order (such that a file only depends on files listed before it being loaded). These files will be loaded before any `nonClosureNamespacedInputFiles`.
 
