@@ -35,6 +35,46 @@ describe('graphUtil', function() {
     });
   });
 
+  describe('#addSetValues()', function() {
+    it('correctly makes "from" the union set', function() {
+      var fromSet = {'A': true, 'B': true, 'C': true};
+      var toSet = {'B': true, 'D': true, 'E': true};
+      graphUtil.addSetValues({from: fromSet, to: toSet});
+
+      should.deepEqual(fromSet, {'A': true, 'B': true, 'C': true});
+      should.deepEqual(toSet, {'A': true, 'B': true, 'C': true,
+                               'D': true, 'E': true});
+    });
+
+    it('handles false from values correctly', function() {
+      var fromSet = {'A': true, 'B': false};
+      var toSet = {'A': false, 'B': true, 'C': true};
+      graphUtil.addSetValues({from: fromSet, to: toSet});
+
+      should.deepEqual(fromSet, {'A': true, 'B': false});
+      should.deepEqual(toSet, {'A': true, 'B': true, 'C': true});
+    });
+  });
+
+  describe('#intersectSets()', function() {
+    it('correctly returns the intersection set', function() {
+      var setA = {'A': true, 'B': true, 'C': true};
+      var setB = {'A': true, 'C': true, 'D': true};
+      should.deepEqual(graphUtil.intersectSets(setA, setB),
+          {'A': true, 'C': true});
+      should.deepEqual(setA, {'A': true, 'B': true, 'C': true});
+      should.deepEqual(setB, {'A': true, 'C': true, 'D': true});
+    });
+
+    it('handles false values correctly', function() {
+      var setA = {'A': true, 'B': true, 'C': true};
+      var setB = {'A': false, 'C': true, 'D': true};
+      should.deepEqual(graphUtil.intersectSets(setA, setB), {'C': true});
+      should.deepEqual(setA, {'A': true, 'B': true, 'C': true});
+      should.deepEqual(setB, {'A': false, 'C': true, 'D': true});
+    });
+  });
+
   describe('#topSortNodes()', function() {
     it('topologically sorts a simple graph', function() {
       var simpleGraph = {'A': {'B': true}, 'B': {}, 'C': {'A': true}};
