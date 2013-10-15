@@ -62,9 +62,9 @@ function newTransitiveClosureDeps() {
 function newExpectedOrderingConstraints() {
   // Even though some of these aren't real deps, js-module-manager has to assume
   // they are, because every time a certain file appears, all of these inferred
-  // deps always appear before it and never appear after it (we don't have a
-  // true list of file dependencies, so that's the best we can do). So it should
-  // preserve these ordering constraints.
+  // deps always appear before it (and we don't have a true list of file
+  // dependencies, so that's the best we can do). So it should preserve these
+  // ordering constraints.
   return {
     'uncomp.js': [],
     'not_closure.js': ['uncomp.js'],
@@ -80,12 +80,11 @@ function newExpectedOrderingConstraints() {
                            '3p/common.js'],
     'a.js': ['uncomp.js', 'not_closure.js', '3p/uncomp_common.js',
              '3p/common.js', '3p/closure/base.js'],
-    'c.js': ['uncomp.js', 'not_closure.js', 'b.js', 'explicit_base.js',
+    'c.js': ['uncomp.js', 'not_closure.js', '3p/uncomp_common.js',
+             '3p/common.js', '3p/closure/base.js', 'a.js'],
+    'd.js': ['uncomp.js', 'not_closure.js', '3p/uncomp_server.js',
              '3p/uncomp_common.js', '3p/common.js', '3p/closure/base.js',
-             'a.js'],
-    'd.js': ['uncomp.js', 'not_closure.js', 'b.js', 'explicit_base.js',
-             '3p/uncomp_server.js', '3p/uncomp_common.js', '3p/common.js',
-             '3p/closure/base.js', 'a.js']
+             'a.js']
   };
 }
 
