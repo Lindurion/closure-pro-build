@@ -109,11 +109,11 @@ function verifyOrderingConstraints(module) {
     filesAppearingAfterCurrent[currentFile] = true;
   };
 
-  for (var i = module.dontCompileInputFiles.length - 1; i >= 0; i--) {
-    checkAndRecord(module.dontCompileInputFiles[i]);
+  for (var i = module.compiledInputFiles.length - 1; i >= 0; i--) {
+    checkAndRecord(module.compiledInputFiles[i]);
   }
-  for (var j = module.compiledInputFiles.length - 1; j >= 0; j--) {
-    checkAndRecord(module.compiledInputFiles[j]);
+  for (var j = module.dontCompileInputFiles.length - 1; j >= 0; j--) {
+    checkAndRecord(module.dontCompileInputFiles[j]);
   }
 }
 
@@ -171,6 +171,8 @@ describe('jsModuleManager', function() {
     // A and B can be moved to middle (not all the way to base).
     it('moves files common to multiple modules to their least common ancestor');
     it('also moves deps of files that are moved to a least common ancestor');
+    it('chooses among multiple possible LCA modules to minimize the number of' +
+        ' files that would newly be required in the chosen module');
     it('moves files common to multiple root modules to a virtual base module');
 
     it('fails if module says it is always loaded after a non-existent module',
