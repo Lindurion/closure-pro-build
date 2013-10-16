@@ -39,7 +39,7 @@ function newValidProjectOptions() {
       },
       secondary: {
         description: 'Downloaded later',
-        dependsOnModules: ['main'],
+        alwaysLoadedAfterModules: ['main'],
         closureRootNamespaces: ['project.secondary'],
       }
     },
@@ -187,7 +187,7 @@ describe('optionValidator', function() {
       should.equal(cssModule.name, 'style');
 
       var jsModules = projectOpts.jsModules;
-      should.equal(jsModules.main.dependsOnModules.length, 0);
+      should.equal(jsModules.main.alwaysLoadedAfterModules.length, 0);
       should.equal(
           jsModules.secondary.nonClosureNamespacedInputFiles.length, 0);
       should.equal(jsModules.secondary.dontCompileInputFiles.length, 0);

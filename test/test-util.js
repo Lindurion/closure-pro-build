@@ -13,6 +13,7 @@
 // limitations under the License.
 
 var common = require('../lib/common.js');
+var graphUtil = require('../lib/graph-util.js');
 var kew = require('kew');
 var should = require('should');
 var path = require('path');
@@ -59,8 +60,41 @@ function fakeFileMatcherFor(expectedRootSrcDir, resolutionList) {
 }
 
 
+//==============================================================================
+// Verification Methods
+//==============================================================================
+
+/**
+ * @param {string} str
+ * @param {string} expectedSubstr
+ */
+function shouldContain(str, expectedSubstr) {
+  str.indexOf(expectedSubstr).should.not.equal(-1,
+      'Expected "' + str + '" to contain substring "' + expectedSubstr + '"');
+}
+
+
+/**
+ * @param {!Array} actualList
+ * @param {!Array} expectedList
+ */
+function shouldHaveSameElements(actualList, expectedList) {
+  var actualCopy = graphUtil.deepClone(actualList);
+  actualCopy.sort();
+
+  var expectedCopy = graphUtil.deepClone(expectedList);
+  expectedCopy.sort();
+
+  should.deepEqual(actualCopy, expectedCopy,
+      'Expected lists to be the same, but were not. Actual: [' + actualList +
+          '], expected: [' + expectedList + ']');
+}
+
+
 // Symbols exported by this internal module.
 module.exports = {
   fakeFileMatcherFor: fakeFileMatcherFor,
-  pathJoin: pathJoin
+  pathJoin: pathJoin,
+  shouldContain: shouldContain,
+  shouldHaveSameElements: shouldHaveSameElements
 };

@@ -21,6 +21,7 @@ var fileMatcher = require('../lib/file-matcher.js');
 var kew = require('kew');
 var path = require('path');
 var should = require('should');
+var shouldContain = require('./test-util.js').shouldContain;
 var sinon = require('sinon');
 var testUtil = require('./test-util.js');
 var underscore = require('underscore');
@@ -156,9 +157,7 @@ describe('soyBuilder', function() {
             should.fail('Was expecting Soy build() to fail with ' +
                 expectedFailureMsg);
           }).fail(function(err) {
-            err.message.indexOf(expectedFailureMsg).should.not.equal(-1,
-                'expected <' + err.message + '> to contain <' +
-                expectedFailureMsg + '>');
+            shouldContain(err.message, expectedFailureMsg);
             callbackFn(null);
           }).end();
     };
