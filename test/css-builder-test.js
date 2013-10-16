@@ -22,6 +22,7 @@ var fs = require('fs');
 var kew = require('kew');
 var path = require('path');
 var should = require('should');
+var shouldContain = require('./test-util.js').shouldContain;
 var sinon = require('sinon');
 var stream = require('stream');
 var testUtil = require('./test-util.js');
@@ -264,9 +265,7 @@ describe('cssBuilder', function() {
             should.fail('Was expecting CSS build() to fail with ' +
                 expectedFailureMsg);
           }).fail(function(err) {
-            err.message.indexOf(expectedFailureMsg).should.not.equal(-1,
-                'expected <' + err.message + '> to contain <' +
-                expectedFailureMsg + '>');
+            shouldContain(err.message, expectedFailureMsg);
             callbackFn(null);
           }).end();
     };
