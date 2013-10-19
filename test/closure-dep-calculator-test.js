@@ -32,12 +32,13 @@ var underscore = require('underscore');
 
 function newProjectOptions() {
   return {
-    rootSrcDir: 'mysrc/',
     jsModules: {
       moduleA: {closureRootNamespaces: ['project.a1', 'project.a2']},
       moduleB: {closureRootNamespaces: ['project.b1', 'project.b2']},
       moduleC: {closureRootNamespaces: ['project.c1', 'project.c2']},
-    }
+    },
+    rootSrcDir: 'mysrc/',
+    closureRootDirs: ['.', '../other_closure_dir/']
   };
 }
 
@@ -64,7 +65,9 @@ function getExpectedArgs(namespace1, namespace2) {
     '--root',
     closureDepCalculator.CLOSURE_LIBRARY_ROOT_DIRS[2],
     '--root',
-    'mysrc/',
+    'mysrc',
+    '--root',
+    'other_closure_dir/',
     '--root',
     'mygen/debug/',
     '--namespace',
