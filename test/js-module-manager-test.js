@@ -140,6 +140,7 @@ describe('jsModuleManager', function() {
       // The explicit_base module must be first.
       var explicitBaseModule = computedModules[0];
       explicitBaseModule.name.should.equal('explicit_base');
+      shouldHaveSameElements(explicitBaseModule.alwaysLoadedAfterModules, []);
       shouldHaveSameElements(explicitBaseModule.dontCompileInputFiles,
           ['uncomp.js', '3p/uncomp_common.js']);
       shouldHaveSameElements(explicitBaseModule.compiledInputFiles,
@@ -151,6 +152,8 @@ describe('jsModuleManager', function() {
       var clientModule = (computedModules[1].name == 'client') ?
           computedModules[1] : computedModules[2];
       clientModule.name.should.equal('client');
+      shouldHaveSameElements(clientModule.alwaysLoadedAfterModules,
+          ['explicit_base']);
       shouldHaveSameElements(clientModule.dontCompileInputFiles,
           ['3p/uncomp_client.js']);
       shouldHaveSameElements(clientModule.compiledInputFiles, ['3p/jquery.js']);
@@ -159,6 +162,8 @@ describe('jsModuleManager', function() {
       var serverModule = (computedModules[1].name == 'server') ?
           computedModules[1] : computedModules[2];
       serverModule.name.should.equal('server');
+      shouldHaveSameElements(serverModule.alwaysLoadedAfterModules,
+          ['explicit_base']);
       shouldHaveSameElements(serverModule.dontCompileInputFiles,
           ['3p/uncomp_server.js']);
       shouldHaveSameElements(serverModule.compiledInputFiles, ['d.js']);
@@ -197,6 +202,7 @@ describe('jsModuleManager', function() {
       // The explicit_base module must be first.
       var explicitBaseModule = computedModules[0];
       explicitBaseModule.name.should.equal('explicit_base');
+      shouldHaveSameElements(explicitBaseModule.alwaysLoadedAfterModules, []);
       should.deepEqual(explicitBaseModule.dontCompileInputFiles,
           ['base_dc1.js', 'base_dc2.js']);
       should.deepEqual(explicitBaseModule.compiledInputFiles,
@@ -206,6 +212,8 @@ describe('jsModuleManager', function() {
       var clientModule = (computedModules[1].name == 'client') ?
           computedModules[1] : computedModules[2];
       clientModule.name.should.equal('client');
+      shouldHaveSameElements(clientModule.alwaysLoadedAfterModules,
+          ['explicit_base']);
       should.deepEqual(clientModule.dontCompileInputFiles,
           ['client_dc1.js', 'client_dc2.js']);
       should.deepEqual(clientModule.compiledInputFiles,
@@ -214,6 +222,8 @@ describe('jsModuleManager', function() {
       var serverModule = (computedModules[1].name == 'server') ?
           computedModules[1] : computedModules[2];
       serverModule.name.should.equal('server');
+      shouldHaveSameElements(serverModule.alwaysLoadedAfterModules,
+          ['explicit_base']);
       should.deepEqual(serverModule.dontCompileInputFiles,
           ['server_dc1.js', 'server_dc2.js']);
       should.deepEqual(serverModule.compiledInputFiles,
@@ -265,6 +275,7 @@ describe('jsModuleManager', function() {
       // The explicit_base module must be first.
       var explicitBaseModule = computedModules[0];
       explicitBaseModule.name.should.equal('explicit_base');
+      shouldHaveSameElements(explicitBaseModule.alwaysLoadedAfterModules, []);
       shouldHaveSameElements(explicitBaseModule.dontCompileInputFiles, []);
       shouldHaveSameElements(explicitBaseModule.compiledInputFiles,
           ['explicit_base.js']);
@@ -272,6 +283,8 @@ describe('jsModuleManager', function() {
       // The middle module must be second, and common.js should be here.
       var middleModule = computedModules[1];
       middleModule.name.should.equal('middle');
+      shouldHaveSameElements(middleModule.alwaysLoadedAfterModules,
+          ['explicit_base']);
       shouldHaveSameElements(middleModule.dontCompileInputFiles, []);
       shouldHaveSameElements(middleModule.compiledInputFiles,
           ['middle.js', 'common.js']);
@@ -280,12 +293,16 @@ describe('jsModuleManager', function() {
       var clientModule = (computedModules[2].name == 'client') ?
           computedModules[2] : computedModules[3];
       clientModule.name.should.equal('client');
+      shouldHaveSameElements(clientModule.alwaysLoadedAfterModules,
+          ['middle']);
       shouldHaveSameElements(clientModule.dontCompileInputFiles, []);
       shouldHaveSameElements(clientModule.compiledInputFiles, ['client.js']);
 
       var serverModule = (computedModules[2].name == 'server') ?
           computedModules[2] : computedModules[3];
       serverModule.name.should.equal('server');
+      shouldHaveSameElements(serverModule.alwaysLoadedAfterModules,
+          ['middle']);
       shouldHaveSameElements(serverModule.dontCompileInputFiles, []);
       shouldHaveSameElements(serverModule.compiledInputFiles, ['server.js']);
     });
@@ -343,6 +360,7 @@ describe('jsModuleManager', function() {
       // could depend on it
       var explicitBaseModule = computedModules[0];
       explicitBaseModule.name.should.equal('explicit_base');
+      shouldHaveSameElements(explicitBaseModule.alwaysLoadedAfterModules, []);
       shouldHaveSameElements(explicitBaseModule.dontCompileInputFiles, []);
       shouldHaveSameElements(explicitBaseModule.compiledInputFiles,
           ['explicit_base.js', 'module_a.js']);
@@ -351,18 +369,24 @@ describe('jsModuleManager', function() {
       var moduleA = (computedModules[1].name == 'moduleA') ?
           computedModules[1] : computedModules[2];
       moduleA.name.should.equal('moduleA');
+      shouldHaveSameElements(moduleA.alwaysLoadedAfterModules,
+          ['explicit_base']);
       shouldHaveSameElements(moduleA.dontCompileInputFiles, []);
       shouldHaveSameElements(moduleA.compiledInputFiles, []);
 
       var moduleB = (computedModules[1].name == 'moduleB') ?
           computedModules[1] : computedModules[2];
       moduleB.name.should.equal('moduleB');
+      shouldHaveSameElements(moduleB.alwaysLoadedAfterModules,
+          ['explicit_base']);
       shouldHaveSameElements(moduleB.dontCompileInputFiles, []);
       shouldHaveSameElements(moduleB.compiledInputFiles, ['module_b.js']);
 
       // Module C must be next, and common.js should have been moved here.
       var moduleC = computedModules[3];
       moduleC.name.should.equal('moduleC');
+      shouldHaveSameElements(moduleC.alwaysLoadedAfterModules,
+          ['moduleB']);
       shouldHaveSameElements(moduleC.dontCompileInputFiles, []);
       shouldHaveSameElements(moduleC.compiledInputFiles,
           ['module_c.js', 'common.js']);
@@ -371,12 +395,16 @@ describe('jsModuleManager', function() {
       var moduleD = (computedModules[4].name == 'moduleD') ?
           computedModules[4] : computedModules[5];
       moduleD.name.should.equal('moduleD');
+      shouldHaveSameElements(moduleD.alwaysLoadedAfterModules,
+          ['moduleA', 'moduleC']);
       shouldHaveSameElements(moduleD.dontCompileInputFiles, []);
       shouldHaveSameElements(moduleD.compiledInputFiles, ['module_d.js']);
 
       var moduleE = (computedModules[4].name == 'moduleE') ?
           computedModules[4] : computedModules[5];
       moduleE.name.should.equal('moduleE');
+      shouldHaveSameElements(moduleE.alwaysLoadedAfterModules,
+          ['moduleA', 'moduleC']);
       shouldHaveSameElements(moduleE.dontCompileInputFiles, []);
       shouldHaveSameElements(moduleE.compiledInputFiles, ['module_e.js']);
     });
@@ -486,6 +514,7 @@ describe('jsModuleManager', function() {
       // The virtual base module must come first.
       var virtualBaseModule = computedModules[0];
       virtualBaseModule.name.should.equal('virtual_base_module');
+      shouldHaveSameElements(virtualBaseModule.alwaysLoadedAfterModules, []);
       should.deepEqual(virtualBaseModule.dontCompileInputFiles, []);
       should.deepEqual(virtualBaseModule.compiledInputFiles,
           ['underscore.js', 'common.js']);
@@ -494,12 +523,16 @@ describe('jsModuleManager', function() {
       var client1Module = (computedModules[1].name == 'client1') ?
           computedModules[1] : computedModules[2];
       client1Module.name.should.equal('client1');
+      shouldHaveSameElements(client1Module.alwaysLoadedAfterModules,
+          ['virtual_base_module']);
       should.deepEqual(client1Module.dontCompileInputFiles, []);
       should.deepEqual(client1Module.compiledInputFiles, ['client1.js']);
 
       var client2Module = (computedModules[2].name == 'client2') ?
           computedModules[2] : computedModules[3];
       client2Module.name.should.equal('client2');
+      shouldHaveSameElements(client2Module.alwaysLoadedAfterModules,
+          ['client1']);
       should.deepEqual(client2Module.dontCompileInputFiles, []);
       should.deepEqual(client2Module.compiledInputFiles, ['client2.js']);
 
@@ -508,6 +541,8 @@ describe('jsModuleManager', function() {
           ((computedModules[2].name == 'server') ?
               computedModules[2] : computedModules[3]);
       serverModule.name.should.equal('server');
+      shouldHaveSameElements(serverModule.alwaysLoadedAfterModules,
+          ['virtual_base_module']);
       should.deepEqual(serverModule.dontCompileInputFiles, []);
       should.deepEqual(serverModule.compiledInputFiles, ['server.js']);
     });
