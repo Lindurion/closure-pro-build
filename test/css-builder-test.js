@@ -105,7 +105,7 @@ var fakeResolveAnyGlobPatternsAsync = testUtil.fakeFileMatcherFor('src/', [
     in: ['style.gss', 'css/*.css'],
     out: ['style.gss', 'css/one.css', 'css/two.css']
   },
-  {in: ['3p/style/*.css'], out: ['3p/style/a.css', '3p/style/b.css']},
+  {in: ['3p/style/*.css'], out: ['3p/style/a.css', '3p/style/b.css']}
 ]);
 
 
