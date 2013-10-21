@@ -126,7 +126,7 @@ function newExpectedBasicArgs(compilationLevel, outputPathPrefix) {
 
 
 function newExpectedDebugArgs(remainingArgs) {
-  return newExpectedBasicArgs('WHITESPACE_ONLY', 'mytmp/debug/')
+  return newExpectedBasicArgs('SIMPLE_OPTIMIZATIONS', 'mytmp/debug/')
       .concat(['--formatting', 'PRETTY_PRINT'])
       .concat(remainingArgs);
 }
