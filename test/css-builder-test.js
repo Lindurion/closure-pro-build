@@ -35,11 +35,11 @@ var underscore = require('underscore');
 
 function newProjectOptions() {
   return {
-    'rootSrcDir': 'src/',
-    'cssModule': {
-      'name': 'mystyle',
-      'closureInputFiles': ['style.gss', 'css/*.css'],
-      'dontCompileInputFiles': ['3p/style/*.css']
+    rootSrcDir: 'mysrc/',
+    cssModule: {
+      name: 'mystyle',
+      closureInputFiles: ['style.gss', 'css/*.css'],
+      dontCompileInputFiles: ['3p/style/*.css']
     }
   };
 }
@@ -47,12 +47,12 @@ function newProjectOptions() {
 
 function newBuildOptions() {
   return {
-    'type': common.DEBUG,
-    'javaCommand': 'myjava',
-    'suppressOutput': false,
-    'tempFileDir': 'mytmp',
-    'generatedCodeDir': 'mygen',
-    'outputDir': 'mybuild'
+    type: common.DEBUG,
+    javaCommand: 'myjava',
+    suppressOutput: false,
+    tempFileDir: 'mytmp',
+    generatedCodeDir: 'mygen',
+    outputDir: 'mybuild'
   };
 }
 
@@ -99,7 +99,7 @@ var EXPECTED_OUTPUT_CSS = EXPECTED_UNCOMPILED_CSS + EXPECTED_COMPILED_CSS;
 // Stubbed Functions
 //==============================================================================
 
-var fakeResolveAnyGlobPatternsAsync = testUtil.fakeFileMatcherFor('src/', [
+var fakeResolveAnyGlobPatternsAsync = testUtil.fakeFileMatcherFor('mysrc/', [
   {in: [], out: []},
   {
     in: ['style.gss', 'css/*.css'],
