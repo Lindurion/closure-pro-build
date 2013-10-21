@@ -104,7 +104,7 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 - **rootSrcDir**: Path to root source directory, which all `InputFiles` paths will be interpreted as relative to. Defaults to current working directory (`.`). For example, `'src/'` is a very common root source directory for many projects.
 - **closureRootDirs**: For fully Closure-compatible JS, list of root directories for Closure to recursively search under to resolve `goog.require()` dependencies. Directory paths are interpreted relative to `rootSrcDir`. Defaults to `['.']` (<i>i.e.</i> searches everywhere under `rootSrcDir`). Closure JS Library directories are automatically searched, so don't list them.
 - **soyInputFiles**: List of input Soy files to compile to JS files using the Closure Templates compiler. Defaults to `['**/*.soy']`, which will automatically find any .soy files recursively under `rootSrcDir` and won't invoke the Closure Templates compiler at all if there are no matching .soy files. This option only needs to be set to choose particular input files or to include .soy files from outside directories. See the [Using Soy in JS Modules](#using-soy-in-js-modules) section below for more information.
-- **jsWarningsWhitelistFile**: A whitelist file for JS compiler warnings where each line is of the form:
+- **jsWarningsWhitelistFile**: A whitelist file (relative to the current directory) for JS compiler warnings where each line is of the form:
   - `path/to/file.js:{line-number}  {first-line-of-warning}`
   - For example: <pre>src/main.js:294  Suspicious code. This code lacks side-effects. Is there a bug?</pre>
 
