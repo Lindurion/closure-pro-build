@@ -3,6 +3,8 @@ closure-pro-build
 
 **Closure Project Builder**: An npm, node.js package that makes it super easy to build projects using some or all of Closure's [JS Compiler](http://developers.google.com/closure/compiler/), [Templates (Soy)](http://developers.google.com/closure/templates/), [Stylesheets (GSS)](http://code.google.com/p/closure-stylesheets/), and [JS Library](http://developers.google.com/closure/library/).
 
+Check out [closure-bxr-starter](http://github.com/Lindurion/closure-bxr-starter) for a sample starter project using closure-pro-build (along with Bootstrap, Express, jQuery, and RECESS).
+
 
 Features
 --------
@@ -140,6 +142,8 @@ General Notes
 - The only possible exception to this is when interacting with JS that is compiled separately (or listed in `dontCompileInputFiles`) from your compiled JS, where you should do one of two things:
   1. Always use quoted strings to access these properties (<i>e.g.</i> `window['foo']['bar']`).
   2. Use an [externs file](http://developers.google.com/closure/compiler/docs/api-tutorial3#externs) via `jsExterns` project option to tell the Closure JS Compiler that certain symbols will be provided externally (so they shouldn't ever be renamed). In that case `foo.bar` access is fine, since the compiler will know not to rename those symbols.
+
+See also the externs files provided for convenience (such as for jQuery) in `closureProBuild.EXTERNS`, defined in [closure-pro-build.js](http://github.com/Lindurion/closure-pro-build/blob/master/lib/closure-pro-build.js). If more externs files would be generally useful, feel free to contribute them.
 
 
 Planned Features
