@@ -1,6 +1,6 @@
 {
   "name": "closure-pro-build",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Build projects using some or all of Closure's JS Compiler, Templates (Soy), Stylesheets (GSS), and JS Library.",
   "keywords": [
     "closure",
