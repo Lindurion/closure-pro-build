@@ -78,7 +78,8 @@ function newProjectOptions() {
       server: newServerModule(),
       clientA: newClientAModule(),
       clientB: newClientBModule()
-    }
+    },
+    jsExterns: []
   };
 }
 
@@ -563,6 +564,37 @@ describe('jsBuilder', function() {
 
       projectOpts.jsModules = {server: newServerModule()};
       expectedArgs = newExpectedReleaseArgs([
+        '--module',
+        'server:4:',
+        '--js',
+        '3p/jquery.js',
+        '--js',
+        'base.js',
+        '--js',
+        'array.js',
+        '--js',
+        'server.js'
+      ]);
+      expectFileOutput('mybuild/release/server.js', [
+        'uncompiled_common.js',
+        'uncompiled_server.js',
+        'mytmp/release/server.js'
+      ]);
+
+      runAndExpectSuccess(callbackFn);
+      makeOutDirsReady();
+      haveNoCssRenamingFile();
+    });
+
+    it('passes along all jsExterns files', function(callbackFn) {
+      projectOpts.jsExterns = ['3p/externs/loaded_via_cdn.js', 'ext2.js'];
+      projectOpts.jsModules = {server: newServerModule()};
+
+      expectedArgs = newExpectedReleaseArgs([
+        '--externs',
+        '3p/externs/loaded_via_cdn.js',
+        '--externs',
+        'ext2.js',
         '--module',
         'server:4:',
         '--js',

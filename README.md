@@ -99,6 +99,7 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 - **rootSrcDir**: Path to root source directory, which all `InputFiles` paths will be interpreted as relative to. Defaults to current working directory (`.`). For example, `'src/'` is a very common root source directory for many projects.
 - **closureRootDirs**: For fully Closure-compatible JS, list of root directories for Closure to recursively search under to resolve `goog.require()` dependencies. Directory paths are interpreted relative to `rootSrcDir`. Defaults to `['.']` (<i>i.e.</i> searches everywhere under `rootSrcDir`). Closure JS Library directories are automatically searched, so don't list them.
 - **soyInputFiles**: List of input Soy files to compile to JS files using the Closure Templates compiler. Defaults to `['**/*.soy']`, which will automatically find any .soy files recursively under `rootSrcDir` and won't invoke the Closure Templates compiler at all if there are no matching .soy files. This option only needs to be set to choose particular input files or to include .soy files from outside directories. See the [Using Soy in JS Modules](#using-soy-in-js-modules) section below for more information.
+- **jsExterns**: A list of externs files (relative to the current directory) to tell the Closure Compiler not to rename externally defined symbols (e.g. when loading jQuery via CDN <script> tag).
 - **jsWarningsWhitelistFile**: A whitelist file (relative to the current directory) for JS compiler warnings where each line is of the form:
   - `path/to/file.js:{line-number}  {first-line-of-warning}`
   - For example: <pre>src/main.js:294  Suspicious code. This code lacks side-effects. Is there a bug?</pre>
@@ -138,7 +139,7 @@ General Notes
 - In all compiled JS, you typically want to access properties as `foo.bar` (NOT `foo['bar']`), since these symbols will be obfuscated in the compiled output (so the quoted string lookup would fail).
 - The only possible exception to this is when interacting with JS that is compiled separately (or listed in `dontCompileInputFiles`) from your compiled JS, where you should do one of two things:
   1. Always use quoted strings to access these properties (<i>e.g.</i> `window['foo']['bar']`).
-  2. Use an [externs file](http://developers.google.com/closure/compiler/docs/api-tutorial3#externs) to tell the Closure JS Compiler that certain symbols will be provided externally (so they shouldn't ever be renamed). In that case `foo.bar` access is fine, since the compiler will know not to rename those symbols. (Not yet supported by closure-pro-build, but support should be easy to add for this).
+  2. Use an [externs file](http://developers.google.com/closure/compiler/docs/api-tutorial3#externs) via `jsExterns` project option to tell the Closure JS Compiler that certain symbols will be provided externally (so they shouldn't ever be renamed). In that case `foo.bar` access is fine, since the compiler will know not to rename those symbols.
 
 
 Planned Features
@@ -146,7 +147,6 @@ Planned Features
 Future support is planned for:
 - Message translation tools & separate output files for each supported locale.
 - RTL flipping of CSS styles (<i>e.g.</i> `"left: 20px"` becomes `"right: 20px"`) for RTL locales.
-- Custom externs files (<i>e.g.</i> if you want to include jQuery via a CDN src script tag, an externs file could tell the Closure compiler which symbols it can trust to be defined and include type information).
 
 
 License & Copyright
