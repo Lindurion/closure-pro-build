@@ -8,8 +8,8 @@ Check out [closure-bxr-starter](http://github.com/Lindurion/closure-bxr-starter)
 
 Features
 --------
-- Can have multiple JS/Soy modules (multiple output JS files that can be served when needed).
-- Automatically calculates Closure dependencies & moves input files common to multiple modules into parent modules as needed.
+- Can have multiple JS/Soy modules (multiple output JS files that can be loaded when needed on clients, servers, or both).
+- Automatically calculates Closure dependencies & moves input files common to multiple modules into parent modules to prevent duplicate code loading.
 - Input JS files can be:
   - **Fully Closure-compatible** (using `goog.require()`, `goog.provide()`).
   - **Partly Closure-compatible** (not using `goog.require()`, `goog.provide()`), still run through compilation & minification.
@@ -43,7 +43,7 @@ Sample usage for a project using a CSS module (for application and 3rd party CSS
         main: {
           description: 'Main JS module, with all client-side JS',
           closureRootNamespaces: ['sample.main'],
-          nonClosureNamespacedInputFiles: ['path/to/jquery.js'],
+          nonClosureNamespacedInputFiles: ['path/to/some/non-closure-lib.js'],
           dontCompileInputFiles: ['path/to/wont-minify-this.js']
         }
       }
@@ -75,7 +75,7 @@ All `InputFiles` parameters are handled as follows:
 
 ### System Requirements ###
 
-Java and Python version 2 must be installed and part of the system path as `java` and `python` in order to run all Closure tools. These commands are also configurable via `buildOptions` (<i>e.g.</i> in case `python` would resolve to Python 3 on your system).
+Java 7+ and Python 2 must be installed and part of the system path as `java` and `python` in order to run all Closure tools. These commands are also configurable via `buildOptions` (<i>e.g.</i> in case `python` would resolve to Python 3 on your system).
 
 
 ### Project Options ###
@@ -101,7 +101,7 @@ Each CSS or JS module specifies the input files that should be compiled (or not)
 - **rootSrcDir**: Path to root source directory, which all `InputFiles` paths will be interpreted as relative to. Defaults to current working directory (`.`). For example, `'src/'` is a very common root source directory for many projects.
 - **closureRootDirs**: For fully Closure-compatible JS, list of root directories for Closure to recursively search under to resolve `goog.require()` dependencies. Directory paths are interpreted relative to `rootSrcDir`. Defaults to `['.']` (<i>i.e.</i> searches everywhere under `rootSrcDir`). Closure JS Library directories are automatically searched, so don't list them.
 - **soyInputFiles**: List of input Soy files to compile to JS files using the Closure Templates compiler. Defaults to `['**/*.soy']`, which will automatically find any .soy files recursively under `rootSrcDir` and won't invoke the Closure Templates compiler at all if there are no matching .soy files. This option only needs to be set to choose particular input files or to include .soy files from outside directories. See the [Using Soy in JS Modules](#using-soy-in-js-modules) section below for more information.
-- **jsExterns**: A list of externs files (relative to the current directory) to tell the Closure Compiler not to rename externally defined symbols (e.g. when loading jQuery via CDN script tag).
+- **jsExterns**: A list of externs files (relative to the current directory) to tell the Closure Compiler not to rename externally defined symbols (<i>e.g.</i> when loading jQuery via CDN script tag).
 - **jsWarningsWhitelistFile**: A whitelist file (relative to the current directory) for JS compiler warnings where each line is of the form:
   - `path/to/file.js:{line-number}  {first-line-of-warning}`
   - For example: <pre>src/main.js:294  Suspicious code. This code lacks side-effects. Is there a bug?</pre>
